@@ -181,33 +181,33 @@ class SymbolicSubringFactory(UniqueFactory):
             sage: SymbolicSubring.create_key_and_extra_args()
             Traceback (most recent call last):
             ...
-            ValueError: Cannot create a symbolic subring since nothing is specified.
+            ValueError: cannot create a symbolic subring since nothing is specified
             sage: SymbolicSubring.create_key_and_extra_args(
             ....:     accepting_variables=('a',), rejecting_variables=('r',))
             Traceback (most recent call last):
             ...
-            ValueError: Cannot create a symbolic subring since input is ambiguous.
+            ValueError: cannot create a symbolic subring since input is ambiguous
             sage: SymbolicSubring.create_key_and_extra_args(
             ....:     accepting_variables=('a',), no_variables=True)
             Traceback (most recent call last):
             ...
-            ValueError: Cannot create a symbolic subring since input is ambiguous.
+            ValueError: cannot create a symbolic subring since input is ambiguous
             sage: SymbolicSubring.create_key_and_extra_args(
             ....:     rejecting_variables=('r',), no_variables=True)
             Traceback (most recent call last):
             ...
-            ValueError: Cannot create a symbolic subring since input is ambiguous.
+            ValueError: cannot create a symbolic subring since input is ambiguous
         """
         if accepting_variables is None and \
            rejecting_variables is None and \
            not no_variables:
-            raise ValueError('Cannot create a symbolic subring '
-                             'since nothing is specified.')
+            raise ValueError('cannot create a symbolic subring '
+                             'since nothing is specified')
         if accepting_variables is not None and rejecting_variables is not None or \
            rejecting_variables is not None and no_variables or \
            no_variables and accepting_variables is not None:
-            raise ValueError('Cannot create a symbolic subring '
-                             'since input is ambiguous.')
+            raise ValueError('cannot create a symbolic subring '
+                             'since input is ambiguous')
 
         if accepting_variables is not None:
             vars = tuple(accepting_variables)
@@ -356,7 +356,7 @@ class GenericSymbolicSubring(SymbolicRing):
             TypeError: x is not contained in Symbolic Subring accepting the variable a
         """
         expression = super()._element_constructor_(x)
-        assert(expression.parent() is self)
+        assert expression.parent() is self
         if not all(self.has_valid_variable(var)
                    for var in expression.variables()):
             raise TypeError('%s is not contained in %s' % (x, self))
@@ -407,7 +407,9 @@ class GenericSymbolicSubring(SymbolicRing):
             # Workaround; can be deleted once #19231 is fixed
             return False
 
-        from sage.rings.all import RLF, CLF, AA, QQbar, InfinityRing
+        from sage.rings.infinity import InfinityRing
+        from sage.rings.qqbar import AA, QQbar
+        from sage.rings.real_lazy import RLF, CLF
 
         if isinstance(P, type):
             return SR._coerce_map_from_(P)

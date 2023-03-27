@@ -50,6 +50,7 @@ class Derangement(CombinatorialElement):
         sage: elt = D([4,3,2,1])
         sage: TestSuite(elt).run()
     """
+
     def to_permutation(self):
         """
         Return the permutation corresponding to ``self``.
@@ -146,8 +147,8 @@ class Derangements(UniqueRepresentation, Parent):
             True
         """
         if x in ZZ:
-            x = list(range(1, x + 1))
-        return super(Derangements, cls).__classcall__(cls, tuple(x))
+            x = tuple(range(1, x + 1))
+        return super().__classcall__(cls, tuple(x))
 
     def __init__(self, x):
         """
@@ -198,7 +199,7 @@ class Derangements(UniqueRepresentation, Parent):
         if isinstance(der, Derangement):
             if der.parent() is self:
                 return der
-            raise ValueError("Cannot convert %s to an element of %s" % (der, self))
+            raise ValueError("cannot convert %s to an element of %s" % (der, self))
         return self.element_class(self, der)
 
     Element = Derangement

@@ -218,7 +218,7 @@ class EllipticCurve_number_field(EllipticCurve_field):
             sage: E == loads(dumps(E))
             True
             sage: E.simon_two_descent()
-            (2, 2, [(0 : 0 : 1)])
+            (2, 2, [(0 : 0 : 1), (1/18*a + 7/18 : -5/54*a - 17/54 : 1)])
             sage: E.simon_two_descent(lim1=5, lim3=5, limtriv=10, maxprob=7, limbigprime=10)
             (2, 2, [(-1 : 0 : 1), (-2 : -1/2*a - 1/2 : 1)])
 
@@ -274,7 +274,7 @@ class EllipticCurve_number_field(EllipticCurve_field):
             sage: E.simon_two_descent()  # long time (4s on sage.math, 2013)
             (3,
              3,
-             [(5/8*zeta43_0^2 + 17/8*zeta43_0 - 9/4 : -27/16*zeta43_0^2 - 103/16*zeta43_0 + 39/8 : 1),
+             [(1/8*zeta43_0^2 - 3/8*zeta43_0 - 1/4 : -5/16*zeta43_0^2 + 7/16*zeta43_0 + 1/8 : 1),
               (0 : 0 : 1)])
         """
         verbose = int(verbose)
@@ -388,7 +388,7 @@ class EllipticCurve_number_field(EllipticCurve_field):
             RR = RealField()
         else:
             RR = RealField(precision)
-        from sage.matrix.all import MatrixSpace
+        from sage.matrix.matrix_space import MatrixSpace
         M = MatrixSpace(RR, r)
         mat = M()
         for j in range(r):
@@ -737,7 +737,7 @@ class EllipticCurve_number_field(EllipticCurve_field):
 
         A model for this elliptic curve, optimally scaled with respect
         to scaling by units, with respect to the logarithmic embedding
-        of |c4|^(1/4)+|c6|^(1/6).  No scaling by roots of unity is
+        of `|c4|^(1/4)+|c6|^(1/6)`. No scaling by roots of unity is
         carried out, so there is no change when the unit rank is 0.
 
         EXAMPLES::
@@ -775,27 +775,44 @@ class EllipticCurve_number_field(EllipticCurve_field):
             sage: E1 = E.scale_curve(u^5)
             sage: E1._scale_by_units().ainvs() == E.ainvs()
             True
+
+        TESTS:
+
+        See :trac:`34174`.  This used to raise an error due to insufficient precision::
+
+            sage: K.<a> = QuadraticField(4569)
+            sage: j = 46969655/32768
+            sage: E = EllipticCurve(j=K(j))
+            sage: C = E.isogeny_class()
         """
         K = self.base_field()
         r1, r2 = K.signature()
         if r1 + r2 == 1:  # unit rank is 0
             return self
 
-        prec = 1000  # lower precision works badly!
-        embs = K.places(prec=prec)
         degs = [1]*r1 + [2]*r2
         fu = K.units()
-        from sage.matrix.all import Matrix
-        U = Matrix([[e(u).abs().log()*d for d,e in zip(degs,embs)] for u in fu])
-        A = U*U.transpose()
-        Ainv = A.inverse()
-
         c4, c6 = self.c_invariants()
-        c4s = [e(c4) for e in embs]
-        c6s = [e(c6) for e in embs]
+
+        from sage.matrix.constructor import Matrix
         from sage.modules.free_module_element import vector
-        v = vector([(x4.abs().nth_root(4)+x6.abs().nth_root(6)).log()*d for x4,x6,d in zip(c4s,c6s,degs)])
-        es = [e.round() for e in -Ainv*U*v]
+
+        prec = 1000 # initial value, will be increased if necessary
+        ok = False
+        while not ok:
+            embs = K.places(prec=prec)
+            c4s = [e(c4) for e in embs]
+            c6s = [e(c6) for e in embs]
+
+            U = Matrix([[e(u).abs().log()*d for d,e in zip(degs,embs)] for u in fu])
+            v = vector([(x4.abs().nth_root(4)+x6.abs().nth_root(6)).log()*d for x4,x6,d in zip(c4s,c6s,degs)])
+            w = -(U*U.transpose()).inverse()*U*v
+            try:
+                es = [e.round() for e in w]
+                ok = True
+            except ValueError:
+                prec *= 2
+
         u = prod([uj**ej for uj,ej in zip(fu,es)])
         return self.scale_curve(u)
 
@@ -848,7 +865,7 @@ class EllipticCurve_number_field(EllipticCurve_field):
             Conductor exponent: 1
             Kodaira Symbol: I1
             Tamagawa Number: 1,
-            Local data at Fractional ideal (-3*i - 2):
+            Local data at Fractional ideal (-2*i + 3):
             Reduction type: bad split multiplicative
             Local minimal model: Elliptic Curve defined by y^2 + (i+1)*x*y + y = x^3 over Number Field in i with defining polynomial x^2 + 1
             Minimal discriminant valuation: 2
@@ -1482,10 +1499,11 @@ class EllipticCurve_number_field(EllipticCurve_field):
         # Note: for number fields other than QQ we could initialize
         # N=K.ideal(1) or N=OK.ideal(1), which are the same, but for
         # K == QQ it has to be ZZ.ideal(1).
-        OK = self.base_ring().ring_of_integers()
+        K = self.base_field()
+        N = ZZ.ideal(1) if K is QQ else K.fractional_ideal(1)
         self._conductor = prod([d.prime()**d.conductor_valuation()
                                 for d in self.local_data()],
-                               OK.ideal(1))
+                               N)
         return self._conductor
 
     def minimal_discriminant_ideal(self):
@@ -1944,6 +1962,11 @@ class EllipticCurve_number_field(EllipticCurve_field):
             sage: EK = EllipticCurve([0,0,0,i,i+3])
             sage: EK.torsion_subgroup ()
             Torsion Subgroup isomorphic to Trivial group associated to the Elliptic Curve defined by y^2 = x^3 + i*x + (i+3) over Number Field in i with defining polynomial x^2 + 1 with i = 1*I
+
+        .. SEEALSO::
+
+            Use :meth:`~sage.schemes.elliptic_curves.ell_field.EllipticCurve_field.division_field`
+            to determine the field of definition of the `\ell`-torsion subgroup.
         """
         from .ell_torsion import EllipticCurveTorsionSubgroup
         return EllipticCurveTorsionSubgroup(self)
@@ -2273,13 +2296,21 @@ class EllipticCurve_number_field(EllipticCurve_field):
         It can happen that no points are found if the height bounds
         used in the search are too small (see :trac:`10745`)::
 
-            sage: K.<y> = NumberField(x^4 + x^2 - 7)
-            sage: E = EllipticCurve(K, [1, 0, 5*y^2 + 16, 0, 0])
+            sage: K.<t> = NumberField(x^4 + x^2 - 7)
+            sage: E = EllipticCurve(K, [1, 0, 5*t^2 + 16, 0, 0])
             sage: E.gens(lim1=1, lim3=1)
             []
-            sage: E.rank(), E.gens(lim3=12)  # long time (about 4s)
-            (1,
-             [(369/25*y^3 + 539/25*y^2 + 1178/25*y + 1718/25 : -29038/125*y^3 - 43003/125*y^2 - 92706/125*y - 137286/125 : 1)])
+            sage: E.rank()
+            1
+            sage: gg=E.gens(lim3=13); gg  # long time (about 4s)
+            [(... : 1)]
+
+        Check that the the point found has infinite order, and that it is on the curve::
+
+            sage: P=gg[0]; P.order()  # long time
+            +Infinity
+            sage: E.defining_polynomial()(*P)  # long time
+            0
 
         Here is a curve of rank 2::
 
@@ -2627,13 +2658,13 @@ class EllipticCurve_number_field(EllipticCurve_field):
             sage: [phi.codomain().cm_discriminant() for phi in E.isogenies_prime_degree()]  # long time
             [-92, -23, -23]
 
-            sage: C.matrix()  # long time
-            [1 2 2 4 2 4]
-            [2 1 2 2 4 4]
-            [2 2 1 4 4 2]
-            [4 2 4 1 3 3]
-            [2 4 4 3 1 3]
-            [4 4 2 3 3 1]
+            sage: C.matrix()  # long time # random
+            [1 2 2 4 4 2]
+            [2 1 2 4 2 4]
+            [2 2 1 2 4 4]
+            [4 4 2 1 3 3]
+            [4 2 4 3 1 3]
+            [2 4 4 3 3 1]
 
         The graph of this isogeny class has a shape which does not
         occur over `\QQ`: a triangular prism.  Note that for curves
@@ -2659,13 +2690,15 @@ class EllipticCurve_number_field(EllipticCurve_field):
         determined::
 
             sage: G = C.graph()  # long time
-            sage: G.adjacency_matrix()  # long time
-            [0 1 1 0 1 0]
-            [1 0 1 1 0 0]
-            [1 1 0 0 0 1]
-            [0 1 0 0 1 1]
-            [1 0 0 1 0 1]
-            [0 0 1 1 1 0]
+            sage: G.adjacency_matrix()  # long time # random
+            [0 1 1 0 0 1]
+            [1 0 1 0 1 0]
+            [1 1 0 1 0 0]
+            [0 0 1 0 1 1]
+            [0 1 0 1 0 1]
+            [1 0 0 1 1 0]
+            sage: Graph(polytopes.simplex(2).prism().adjacency_matrix()).is_isomorphic(G) # long time
+            True
 
         To display the graph without any edge labels::
 
@@ -3299,7 +3332,7 @@ class EllipticCurve_number_field(EllipticCurve_field):
             sage: points = [E.lift_x(x) for x in xi]
             sage: newpoints, U = E.lll_reduce(points)  # long time (35s on sage.math, 2011)
             sage: [P[0] for P in newpoints]            # long time
-            [6823803569166584943, 5949539878899294213, 2005024558054813068, 5864879778877955778, 23955263915878682727/4, 5922188321411938518, 5286988283823825378, 175620639884534615751/25, -11451575907286171572, 3502708072571012181, 1500143935183238709184/225, 27180522378120223419/4, -5811874164190604461581/625, 26807786527159569093, 7404442636649562303, 475656155255883588, 265757454726766017891/49, 7272142121019825303, 50628679173833693415/4, 6951643522366348968, 6842515151518070703, 111593750389650846885/16, 2607467890531740394315/9, -1829928525835506297]
+            [6823803569166584943, 5949539878899294213, 2005024558054813068, 5864879778877955778, 23955263915878682727/4, 5922188321411938518, 5286988283823825378, 11465667352242779838, -11451575907286171572, 3502708072571012181, 1500143935183238709184/225, 27180522378120223419/4, -5811874164190604461581/625, 26807786527159569093, 7041412654828066743, 475656155255883588, 265757454726766017891/49, 7272142121019825303, 50628679173833693415/4, 6951643522366348968, 6842515151518070703, 111593750389650846885/16, 2607467890531740394315/9, -1829928525835506297]
 
         An example to show the explicit use of the height pairing matrix::
 
@@ -3865,7 +3898,7 @@ class EllipticCurve_number_field(EllipticCurve_field):
             raise ValueError("points not linearly independent in saturation()")
         sat_reg = reg
 
-        from sage.rings.all import prime_range
+        from sage.rings.fast_arith import prime_range
         if full_saturation:
             if lower_ht_bound is None:
                 # TODO (robertwb): verify this for rank > 1

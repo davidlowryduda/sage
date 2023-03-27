@@ -31,7 +31,7 @@ SAGE_ROOT_LOGS = logs
 
 # The --stop flag below is just a random flag to induce graceful
 # breakage with non-GNU versions of make.
-# See https://trac.sagemath.org/ticket/24617
+# See https://github.com/sagemath/sage/issues/24617
 
 # Defer unknown targets to build/make/Makefile
 %::
@@ -80,18 +80,6 @@ download:
 dist: build/make/Makefile
 	./sage --sdist
 
-pypi-sdists: sage_setup
-	./sage --sh build/pkgs/sage_conf/spkg-src
-	./sage --sh build/pkgs/sage_sws2rst/spkg-src
-	./sage --sh build/pkgs/sage_docbuild/spkg-src
-	./sage --sh build/pkgs/sage_setup/spkg-src
-	./sage --sh build/pkgs/sagelib/spkg-src
-	./sage --sh build/pkgs/sagemath_objects/spkg-src
-	./sage --sh build/pkgs/sagemath_categories/spkg-src
-	./sage --sh build/pkgs/sagemath_environment/spkg-src
-	./sage --sh build/pkgs/sagemath_repl/spkg-src
-	@echo "Built sdists are in upstream/"
-
 ###############################################################################
 # Cleaning up
 ###############################################################################
@@ -131,6 +119,13 @@ sage_setup-clean:
 build-clean: clean doc-clean sagelib-clean sage_docbuild-clean
 
 doc-clean:
+	if [ -f "$(SAGE_SRC)"/bin/sage-env-config ]; then \
+	    . "$(SAGE_SRC)"/bin/sage-env-config; \
+	    if [ -n "$$SAGE_LOCAL" ]; then \
+	        rm -rf "$$SAGE_LOCAL/share/doc/sage/inventory"; \
+	        rm -rf "$$SAGE_LOCAL/share/doc/sage/doctrees"; \
+	    fi; \
+	fi; \
 	cd "$(SAGE_SRC)/doc" && $(MAKE) clean
 
 # Deleting src/lib is to get rid of src/lib/pkgconfig
@@ -228,8 +223,8 @@ TEST_FILES = --all
 TEST_FLAGS =
 
 # When the documentation is installed, "optional" also includes all tests marked 'sagemath_doc_html',
-# see https://trac.sagemath.org/ticket/25345, https://trac.sagemath.org/ticket/26110, and
-# https://trac.sagemath.org/ticket/32759
+# see https://github.com/sagemath/sage/issues/25345, https://github.com/sagemath/sage/issues/26110, and
+# https://github.com/sagemath/sage/issues/32759
 TEST_OPTIONAL = sage,optional
 
 # Keep track of the top-level *test* Makefile target for logging.

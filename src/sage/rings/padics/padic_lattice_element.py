@@ -12,7 +12,7 @@ tests because they take a few minutes as of mid 2018, see :trac:`25431`::
 
     sage: R1 = ZpLC(2)
     doctest:...: FutureWarning: This class/method/function is marked as experimental. It, its functionality or its interface might change without a formal deprecation.
-    See http://trac.sagemath.org/23505 for details.
+    See https://github.com/sagemath/sage/issues/23505 for details.
     sage: R2 = ZpLF(2)
     sage: R3 = QpLC(2)
     sage: R4 = QpLF(2)
@@ -501,7 +501,7 @@ class pAdicLatticeElement(pAdicGenericElement):
 
     def is_equal_to(self, other, prec):
         r"""
-        Return ``True`` if this element is indisting
+        Return ``True`` if this element is indistinguishable
         from ``other`` at precision ``prec``
 
         EXAMPLES::
@@ -617,10 +617,10 @@ class pAdicLatticeElement(pAdicGenericElement):
         r"""
         Return the quotient of this element and ``other``.
 
-        NOTE::
+        .. NOTE::
 
-        The result of division always lives in the fraction field,
-        even if the element to be inverted is a unit.
+            The result of division always lives in the fraction field,
+            even if the element to be inverted is a unit.
 
         EXAMPLES::
 
@@ -660,10 +660,10 @@ class pAdicLatticeElement(pAdicGenericElement):
         r"""
         Return the multiplicative inverse of this element.
 
-        NOTE::
+        .. NOTE::
 
-        The result of division always lives in the fraction field,
-        even if the element to be inverted is a unit.
+            The result of division always lives in the fraction field,
+            even if the element to be inverted is a unit.
 
         EXAMPLES::
 
@@ -1010,7 +1010,7 @@ class pAdicLatticeElement(pAdicGenericElement):
             sage: b.unit_part()
             1 + 16*17 + O(17^3)
 
-        If the element is indistinguishable from zero, an error is raised.
+        If the element is indistinguishable from zero, an error is raised::
 
             sage: c = R(0, 5); c
             O(17^5)
@@ -1278,10 +1278,10 @@ class pAdicLatticeCapElement(pAdicLatticeElement):
         r"""
         Return ``True`` if this element is exactly zero.
 
-        NOTE::
+        .. NOTE::
 
-        Since exact zeros are not supported in the precision lattice
-        model, this function always returns ``False``.
+            Since exact zeros are not supported in the precision lattice
+            model, this function always returns ``False``.
 
         EXAMPLES::
 

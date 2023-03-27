@@ -111,7 +111,7 @@ from sage.rings.integer_ring import ZZ, is_IntegerRing
 from sage.rings.finite_rings.finite_field_constructor import FiniteField as GF
 import sage.rings.abc
 from sage.rings.rational_field import QQ
-from sage.arith.all import gcd
+from sage.arith.misc import GCD as gcd
 
 from .matrix2 import decomp_seq
 from .matrix0 import Matrix as Matrix_base
@@ -2210,7 +2210,7 @@ cdef class Matrix_rational_dense(Matrix_dense):
         mpq_clear(tmp2)
         return QA
 
-    def randomize(self, density=1, num_bound=2, den_bound=2, \
+    def randomize(self, density=1, num_bound=2, den_bound=2,
                   distribution=None, nonzero=False):
         """
         Randomize ``density`` proportion of the entries of this matrix, leaving
@@ -2351,6 +2351,13 @@ cdef class Matrix_rational_dense(Matrix_dense):
             False
             sage: any(b[i,j].is_zero() for i in range(10) for j in range(10))
             False
+
+        Check that :trac:`34103` is fixed::
+
+            sage: a = matrix(QQ, 10, 10, 1)
+            sage: a.randomize(nonzero=True, distribution='1/n')
+            sage: bool(a)
+            True
         """
         density = float(density)
         if density <= 0.0:

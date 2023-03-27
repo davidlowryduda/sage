@@ -78,12 +78,12 @@ class Frobby:
             print("Frobby command: ", repr(command))
             print("Frobby input:\n", input)
 
-        process = Popen(command, stdin = PIPE, stdout = PIPE, stderr = PIPE)
+        process = Popen(command, stdin=PIPE, stdout=PIPE, stderr=PIPE)
         if input:
             frinput = str_to_bytes(input)
         else:
             frinput = None
-        output, err = process.communicate(input = frinput)
+        output, err = process.communicate(input=frinput)
         output = bytes_to_str(output)
         err = bytes_to_str(err)
 
@@ -123,7 +123,7 @@ class Frobby:
             True
 
         We see how it is much faster to compute this with frobby than the built-in
-        procedure for simplicial complexes.
+        procedure for simplicial complexes::
 
             sage: t=simplicial_complexes.PoincareHomologyThreeSphere() # optional - frobby
             sage: R=PolynomialRing(QQ,16,'x') # optional - frobby
@@ -361,7 +361,7 @@ class Frobby:
         A list of rows of the matrix, where each row is represented as
         a list of integers.
 
-        EXAMPLES::
+        EXAMPLES:
 
         The format is straight-forward, as this example shows. ::
 

@@ -257,9 +257,9 @@ cdef class PPLBackend(GenericBackend):
 
         - ``binary`` -- ``True`` if the variable is binary (default: ``False``).
 
-        - ``continuous`` -- ``True`` if the variable is binary (default: ``True``).
+        - ``continuous`` -- ``True`` if the variable is continuous (default: ``True``).
 
-        - ``integer`` -- ``True`` if the variable is binary (default: ``False``).
+        - ``integer`` -- ``True`` if the variable is integral (default: ``False``).
 
         - ``obj`` -- (optional) coefficient of this variable in the objective function (default: 0)
 
@@ -328,9 +328,9 @@ cdef class PPLBackend(GenericBackend):
 
         - ``binary`` -- ``True`` if the variable is binary (default: ``False``).
 
-        - ``continuous`` -- ``True`` if the variable is binary (default: ``True``).
+        - ``continuous`` -- ``True`` if the variable is continuous (default: ``True``).
 
-        - ``integer`` -- ``True`` if the variable is binary (default: ``False``).
+        - ``integer`` -- ``True`` if the variable is integral (default: ``False``).
 
         - ``obj`` -- (optional) coefficient of all variables in the objective function (default: 0)
 
@@ -1070,7 +1070,7 @@ cdef class PPLBackend(GenericBackend):
         - ``index`` (integer) -- the variable's id
 
         - ``value`` -- real value, or ``None`` to mean that the
-          variable has not upper bound. When set to ``None``
+          variable has not upper bound. When set to ``False``
           (default), the method returns the current value.
 
         EXAMPLES::
@@ -1102,7 +1102,7 @@ cdef class PPLBackend(GenericBackend):
         - ``index`` (integer) -- the variable's id
 
         - ``value`` -- real value, or ``None`` to mean that the
-          variable has not lower bound. When set to ``None``
+          variable has not lower bound. When set to ``False``
           (default), the method returns the current value.
 
         EXAMPLES::

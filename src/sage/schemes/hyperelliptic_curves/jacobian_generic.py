@@ -8,7 +8,8 @@ Jacobian of a general hyperelliptic curve
 #                  http://www.gnu.org/licenses/
 # ****************************************************************************
 
-from sage.rings.all import Integer, QQ
+from sage.rings.integer import Integer
+from sage.rings.rational_field import QQ
 from sage.misc.lazy_attribute import lazy_attribute
 from sage.schemes.jacobians.abstract_jacobian import Jacobian_generic
 from . import jacobian_homset
@@ -228,7 +229,7 @@ class HyperellipticJacobian_generic(Jacobian_generic):
         Return whether the geometric endomorphism algebra is a field.
 
         This implies that the Jacobian of the curve is geometrically
-        simple. It is based on Algorithm 4.10 from from [Lom2019]_
+        simple. It is based on Algorithm 4.10 from [Lom2019]_
 
         INPUT:
 

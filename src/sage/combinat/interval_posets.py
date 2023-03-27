@@ -36,7 +36,7 @@ from collections.abc import Iterator
 from sage.categories.enumerated_sets import EnumeratedSets
 from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
 from sage.categories.posets import Posets
-from sage.categories.all import Monoids
+from sage.categories.monoids import Monoids
 from sage.combinat.posets.posets import Poset, FinitePoset
 from sage.categories.finite_posets import FinitePosets
 from sage.combinat.binary_tree import BinaryTrees
@@ -48,7 +48,7 @@ from sage.misc.cachefunc import cached_method
 from sage.misc.latex import latex
 from sage.misc.lazy_attribute import lazy_attribute
 from sage.rings.integer import Integer
-from sage.rings.semirings.all import NN
+from sage.rings.semirings.non_negative_integer_semiring import NN
 from sage.sets.non_negative_integers import NonNegativeIntegers
 from sage.sets.disjoint_union_enumerated_sets import DisjointUnionEnumeratedSets
 from sage.sets.family import Family
@@ -450,7 +450,7 @@ class TamariIntervalPoset(Element,
         c1 = 'red'    # self.latex_options()["color_decreasing"]
         G = self.poset().hasse_diagram()
         G.set_pos(self._find_node_positions())
-        for a, b, c in G.edges():
+        for a, b, c in G.edges(sort=False):
             if a < b:
                 G.set_edge_label(a, b, 0)
             else:
@@ -625,7 +625,7 @@ class TamariIntervalPoset(Element,
             shift = 1 - min(comp)
             comp.relabel(lambda i: i + shift)
             resu.append(TamariIntervalPoset(len(comp),
-                                            comp.edges(labels=False)))
+                                            comp.edges(sort=False, labels=False)))
         return resu
 
     def __hash__(self):
@@ -1349,7 +1349,7 @@ class TamariIntervalPoset(Element,
             elif M[i][i] == '-O ' and right:
                 M[i][i] = '-O-'
 
-        for i, j in self.poset().hasse_diagram().edges(labels=False):
+        for i, j in self.poset().hasse_diagram().edges(sort=True, labels=False):
             if i > j:
                 superpose_node(i, False)
                 superpose(i, j, ' +-')
@@ -1427,7 +1427,7 @@ class TamariIntervalPoset(Element,
                 elif b == '╰':
                     M[i][j] = '├'
 
-        for i, j in self.poset().hasse_diagram().edges(labels=False):
+        for i, j in self.poset().hasse_diagram().edges(sort=True, labels=False):
             if i > j:
                 superpose(i, j, '╰')
                 for k in range(j + 1, i):
@@ -1482,8 +1482,8 @@ class TamariIntervalPoset(Element,
             return (self.size() == other.size() and
                     self._cover_relations == other._cover_relations)
         if op == op_NE:
-            return not(self.size() == other.size() and
-                       self._cover_relations == other._cover_relations)
+            return not (self.size() == other.size() and
+                        self._cover_relations == other._cover_relations)
         return richcmp((self.size(), self.cubical_coordinates()),
                        (other.size(), other.cubical_coordinates()), op)
 
@@ -3568,6 +3568,7 @@ class TamariIntervalPosets_all(DisjointUnionEnumeratedSets, TamariIntervalPosets
     r"""
     The enumerated set of all Tamari interval-posets.
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -3655,6 +3656,7 @@ class TamariIntervalPosets_size(TamariIntervalPosets):
     r"""
     The enumerated set of interval-posets of a given size.
     """
+
     def __init__(self, size):
         r"""
         TESTS::
@@ -3707,7 +3709,7 @@ class TamariIntervalPosets_size(TamariIntervalPosets):
             sage: [TamariIntervalPosets(i).cardinality() for i in range(6)]
             [1, 1, 3, 13, 68, 399]
         """
-        from sage.arith.all import binomial
+        from sage.arith.misc import binomial
         n = self._size
         if n == 0:
             return Integer(1)

@@ -17,7 +17,7 @@ from sage.rings.rational_field import QQ
 from sage.misc.cachefunc import cached_method
 from sage.modules.free_module_element import vector
 from .base_QQ import Polyhedron_QQ
-from sage.arith.all import gcd
+from sage.arith.misc import gcd
 
 
 #########################################################################
@@ -48,8 +48,7 @@ class Polyhedron_ZZ(Polyhedron_QQ):
         """
         if name in ['ehrhart_quasipolynomial']:
             raise AttributeError(name)
-        else:
-            return super(Polyhedron_ZZ, self).__getattribute__(name)
+        return super().__getattribute__(name)
 
     def __dir__(self):
         r"""

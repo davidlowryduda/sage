@@ -171,7 +171,7 @@ def cython(filename, verbose=0, compile_message=False,
         sage: os.chdir(d)
         sage: with open("helper.pxd", 'w') as f:
         ....:     _ = f.write("cdef inline int the_answer(): return 42")
-        sage: cython('''  # optional - sage.misc.cython
+        sage: cython('''
         ....: from helper cimport the_answer
         ....: print(the_answer())
         ....: ''')
@@ -208,7 +208,7 @@ def cython(filename, verbose=0, compile_message=False,
 
     As of :trac:`29139` the default is ``cdivision=True``::
 
-        sage: cython('''  # optional - sage.misc.cython
+        sage: cython('''
         ....: cdef size_t foo = 3/2
         ....: ''')
     """
@@ -240,13 +240,20 @@ def cython(filename, verbose=0, compile_message=False,
         # There is already a module here. Maybe we do not have to rebuild?
         # Find the name.
         if use_cache:
-            from sage.misc.sageinspect import loadable_module_extension
-            prev_so = [F for F in os.listdir(target_dir) if F.endswith(loadable_module_extension())]
-            if len(prev_so) > 0:
-                prev_so = prev_so[0]     # should have length 1 because of deletes below
-                if os.path.getmtime(filename) <= os.path.getmtime('%s/%s' % (target_dir, prev_so)):
+            from importlib.machinery import EXTENSION_SUFFIXES
+            for f in os.listdir(target_dir):
+                for suffix in EXTENSION_SUFFIXES:
+                    if f.endswith(suffix):
+                        # use the first matching extension
+                        prev_file = os.path.join(target_dir, f)
+                        prev_name = f[:-len(suffix)]
+                        break
+                else:
+                    # no match, try next file
+                    continue
+                if os.path.getmtime(filename) <= os.path.getmtime(prev_file):
                     # We do not have to rebuild.
-                    return prev_so[:-len(loadable_module_extension())], target_dir
+                    return prev_name, target_dir
 
         # Delete all ordinary files in target_dir
         for F in os.listdir(target_dir):
@@ -280,7 +287,7 @@ def cython(filename, verbose=0, compile_message=False,
     shutil.copy(filename, pyxfile)
 
     # Add current working directory to includes. This is needed because
-    # we cythonize from a different directory. See Trac #24764.
+    # we cythonize from a different directory. See Issue #24764.
     standard_libs, standard_libdirs, standard_includes, aliases = _standard_libs_libdirs_incdirs_aliases()
     includes = [os.getcwd()] + standard_includes
 
@@ -323,7 +330,7 @@ def cython(filename, verbose=0, compile_message=False,
         # standard DLLs, while giving ~2GB (should be more than enough) for
         # Sage to grow, we base these DLLs from 0x5:8000000, leaving again ~2GB
         # for temp DLLs which in normal use should be more than enough.
-        # See https://trac.sagemath.org/ticket/28258
+        # See https://github.com/sagemath/sage/issues/28258
         # It should be noted, this is not a bulletproof solution; there is
         # still a potential for DLL overlaps with this.  But this reduces the
         # probability thereof, especially in normal practice.
@@ -343,7 +350,7 @@ def cython(filename, verbose=0, compile_message=False,
 
     try:
         # Change directories to target_dir so that Cython produces the correct
-        # relative path; https://trac.sagemath.org/ticket/24097
+        # relative path; https://github.com/sagemath/sage/issues/24097
         with restore_cwd(target_dir):
             try:
                 from sage.misc.package_dir import cython_namespace_package_support
@@ -409,9 +416,11 @@ def cython(filename, verbose=0, compile_message=False,
 
     if create_local_so_file:
         # Copy module to current directory
-        from sage.misc.sageinspect import loadable_module_extension
-        shutil.copy(os.path.join(target_dir, name + loadable_module_extension()),
-                    os.curdir)
+        from importlib.machinery import EXTENSION_SUFFIXES
+        for ext in EXTENSION_SUFFIXES:
+            path = os.path.join(target_dir, name + ext)
+            if os.path.exists(path):
+                shutil.copy(path, os.curdir)
 
     return name, target_dir
 
@@ -527,6 +536,10 @@ def cython_import(filename, **kwds):
     oldpath = sys.path
     try:
         sys.path.append(build_dir)
+        return builtins.__import__(name)
+    except ModuleNotFoundError:
+        import importlib
+        importlib.invalidate_caches()
         return builtins.__import__(name)
     finally:
         sys.path = oldpath
@@ -661,7 +674,7 @@ def cython_compile(code, **kwds):
 
 
 # THe following utility functions are used on Cygwin only to work around a
-# shortcoming in ld/binutils; see https://trac.sagemath.org/ticket/28258
+# shortcoming in ld/binutils; see https://github.com/sagemath/sage/issues/28258
 def _strhash(s):
     """
     Implementation of the strhash function from binutils

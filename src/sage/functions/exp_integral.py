@@ -1,5 +1,5 @@
 r"""
-Exponential Integrals
+Exponential integrals
 
 AUTHORS:
 
@@ -1312,7 +1312,7 @@ Chi = cosh_integral = Function_cosh_integral()
 
 ###################################################################
 # Code below here was moved from sage/functions/transcendental.py
-# This occurred as part of Trac #11143.
+# This occurred as part of Issue #11143.
 ###################################################################
 
 # This class has a name which is not specific enough

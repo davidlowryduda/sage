@@ -155,7 +155,7 @@ from cysignals.signals cimport sig_on, sig_off
 from memory_allocator cimport MemoryAllocator
 
 from sage.graphs.distances_all_pairs cimport c_distances_all_pairs
-from sage.arith.all import binomial
+from sage.arith.misc import binomial
 from sage.rings.integer_ring import ZZ
 from sage.rings.real_mpfr import RR
 from sage.data_structures.bitset import Bitset
@@ -202,9 +202,9 @@ def _my_subgraph(G, vertices, relabel=False, return_map=False):
 
         sage: from sage.graphs.hyperbolicity import _my_subgraph as mysub
         sage: H = mysub(graphs.PetersenGraph(), [0,2,4,6])
-        sage: H.edges(labels=None)
+        sage: H.edges(sort=True, labels=None)
         [(0, 4)]
-        sage: H.vertices()
+        sage: H.vertices(sort=True)
         [0, 2, 4, 6]
     """
     from sage.graphs.graph import Graph
@@ -1216,7 +1216,7 @@ def hyperbolicity(G,
         ....:         d5,_,_ = hyperbolicity(cc, algorithm='BCCM')
         ....:         l3,_,u3 = hyperbolicity(cc, approximation_factor=2)
         ....:         if (not d1==d2==d3==d4==d5) or l3>d1 or u3<d1:
-        ....:             print("Error in graph ", cc.edges())
+        ....:             print("Error in graph ", cc.edges(sort=True))
 
     The hyperbolicity of a graph is the maximum value over all its biconnected
     components::

@@ -325,7 +325,7 @@ class RootLatticeRealizations(Category_over_base_ring):
 
             # Check the embeddings from the root lattice and the root space over the same base ring
             root_lattice = self.root_system.root_lattice()
-            root_space   = self.root_system.root_space  (R)
+            root_space = self.root_system.root_space(R)
             tester.assertIsNot(self.coerce_map_from(root_lattice), None)
             tester.assertIsNot(self.coerce_map_from(root_space), None)
             for i in self.index_set():
@@ -416,7 +416,6 @@ class RootLatticeRealizations(Category_over_base_ring):
                 if j[2]>longest[2]:
                     longest=j
             return self.simple_roots()[longest[0]]
-
 
         ##########################################################################
         # simple roots
@@ -804,6 +803,7 @@ class RootLatticeRealizations(Category_over_base_ring):
 
             # Start with the classical positive roots
             alpha = self.simple_roots()
+
             def lift(x):
                 """
                 Lift up the classical element into ``self``.
@@ -1133,6 +1133,7 @@ class RootLatticeRealizations(Category_over_base_ring):
                 for multilist in combinations_with_replacement(list(range(len(chain))), m):
                     if len(set(multilist)) == len(chain):
                         multichains.append(tuple([chain[i] for i in multilist]))
+
             def is_saturated_chain(chain):
                 for i in range(1, m + 1):
                     for j in range(1, m - i + 1):
@@ -1231,7 +1232,6 @@ class RootLatticeRealizations(Category_over_base_ring):
             """
             return self.root_system.coroot_space(base_ring = base_ring)
 
-
         def simple_coroot(self, i):
             """
             Returns the `i^{th}` simple coroot.
@@ -1281,7 +1281,7 @@ class RootLatticeRealizations(Category_over_base_ring):
 
                 (-1, 0, 1)
 
-            .. todo:: add a non simply laced example
+            .. TODO:: add a non simply laced example
 
             Finally, here is an affine example::
 
@@ -1363,7 +1363,6 @@ class RootLatticeRealizations(Category_over_base_ring):
             coef = self.cartan_type().acheck()
             return sum(coef[k]*self.simple_coroots()[k] for k in coef.keys())
 
-
         ##########################################################################
         # fundamental weights
         ##########################################################################
@@ -1443,7 +1442,6 @@ class RootLatticeRealizations(Category_over_base_ring):
             except ValueError:
                 raise ValueError("The fundamental weights do not live in this realization of the root lattice")
             return Family(dict(zip(self.index_set(),fundamental_weights)))
-
 
         ##########################################################################
         # reflections
@@ -1710,6 +1708,7 @@ class RootLatticeRealizations(Category_over_base_ring):
             t = W.from_reduced_word(J)
             simple_roots = self.simple_roots()
             other_negative_simple_roots = set(-simple_roots[i] for i in self.index_set() if i not in J)
+
             def tau_epsilon(alpha):
                 if alpha in other_negative_simple_roots:
                     return alpha
@@ -1786,6 +1785,7 @@ class RootLatticeRealizations(Category_over_base_ring):
             # orbits under the action of a group:
             # def orbits(seeds, operators)
             #     INPUT:
+
             #     - seeds: a list of elements
             #     - operators: a list of functions
             #
@@ -1821,7 +1821,6 @@ class RootLatticeRealizations(Category_over_base_ring):
                     orbit.append(beta)
                 orbits.append(orbit)
             return orbits
-
 
         ##########################################################################
         # Methods for affine root lattice realizations
@@ -2494,7 +2493,6 @@ class RootLatticeRealizations(Category_over_base_ring):
                 G += plot_options.reflection_hyperplane(coroot)
             return plot_options.finalize(G)
 
-
         def plot_hedron(self, **options):
             r"""
             Plot the polyhedron whose vertices are given by the orbit
@@ -2702,6 +2700,7 @@ class RootLatticeRealizations(Category_over_base_ring):
             def alcove_in_bounding_box(w):
                 return any(plot_options.in_bounding_box(w.action(fundamental_alcove_rays[i]))
                            for i in I)
+
             def alcove_facet(w, i):
                 # Alcove facets with degenerate intersection with the
                 # bounding box bring no information; we might as well
@@ -2712,6 +2711,7 @@ class RootLatticeRealizations(Category_over_base_ring):
                                          thickness=plot_options.thickness(i),
                                          wireframe=wireframe,
                                          draw_degenerate=False)
+
             def alcove_label(w):
                 label = "$1$" if w.is_one() else "$s_{"+"".join(str(j) for j in w.reduced_word())+"}$"
                 position = plot_options.projection(w.action(rho))
@@ -2814,7 +2814,6 @@ class RootLatticeRealizations(Category_over_base_ring):
             #             G += line(facet,
             #                       rgbcolor = plot_options.color(i),
             #                       thickness = 2 if i == special_node else 1)
-
 
         def plot_bounding_box(self, **options):
             r"""
@@ -2919,20 +2918,20 @@ class RootLatticeRealizations(Category_over_base_ring):
             if foldings is None:
                 foldings = [False] * len(word)
             w = W.one()
-            source  = plot_options.projection(start)
+            source = plot_options.projection(start)
             G = plot_options.empty()
             for (i, folding) in zip(word, foldings):
                 w = w * s[i]
                 target = plot_options.projection(w.action(start))
                 if folding:
-                    middle = (source+target)/2
-                    G += line ([source, middle], rgbcolor=color)
+                    middle = (source + target) / 2
+                    G += line([source, middle], rgbcolor=color)
                     G += arrow(middle, source, rgbcolor=color, arrowsize=plot_options._arrowsize)
                     # reset w
                     w = w * s[i]
                 else:
                     G += arrow(source, target, rgbcolor=color, arrowsize=plot_options._arrowsize)
-                    source=target
+                    source = target
             return G
 
         @cached_method
@@ -3196,7 +3195,7 @@ class RootLatticeRealizations(Category_over_base_ring):
                         # TODO: Destack the multiple weights
                         G += plot_options.text(elt, positions[wt], rgbcolor=label_color)
 
-            for h,t,i in g.edges():
+            for h,t,i in g.edges(sort=True):
                 G += arrow(positions[self(h.weight())], positions[self(t.weight())],
                            zorder=1, rgbcolor=plot_options.color(i),
                            arrowsize=plot_options._arrowsize)
@@ -3497,6 +3496,7 @@ class RootLatticeRealizations(Category_over_base_ring):
                  (2, 0, 1), (0, 1, 2), (0, 2, 1)]
             """
             I = self.parent().index_set()
+
             def apply_action(la):
                 return [la.dot_action([i]) for i in I]
             R = RecursivelyEnumeratedSet([self], apply_action, structure=None,
@@ -3587,7 +3587,6 @@ class RootLatticeRealizations(Category_over_base_ring):
                 return self - self.scalar(root) * root.associated_coroot()
             else:
                 return self - self.scalar(root.associated_coroot()) * root
-
 
         ##########################################################################
         # Descents
@@ -3782,7 +3781,6 @@ class RootLatticeRealizations(Category_over_base_ring):
             """
             return self.to_dominant_chamber(index_set=index_set,positive=positive,reduced_word = True)[1]
 
-
         def is_dominant(self, index_set = None, positive = True):
             r"""
             Returns whether self is dominant.
@@ -3842,10 +3840,9 @@ class RootLatticeRealizations(Category_over_base_ring):
                True
             """
             alphacheck = self.parent().simple_coroots()
-            from sage.rings.semirings.all import NN
+            from sage.rings.semirings.non_negative_integer_semiring import NN
             return all(self.inner_product(alphacheck[i]) in NN
                        for i in self.parent().index_set())
-
 
         ##########################################################################
         # weak order
@@ -4116,8 +4113,9 @@ class RootLatticeRealizations(Category_over_base_ring):
         def translation(self, x):
             """
             INPUT:
-             - ``self`` - an element `t` at level `0`
-             - ``x`` - an element of the same space
+
+             - ``self`` -- an element `t` at level `0`
+             - ``x`` -- an element of the same space
 
             Returns `x` translated by `t`, that is `x+level(x) t`
 

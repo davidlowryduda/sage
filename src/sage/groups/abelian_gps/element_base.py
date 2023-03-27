@@ -15,12 +15,13 @@ As always, elements are immutable once constructed.
 #  Copyright (C) 2012 Volker Braun  <vbraun.name@gmail.com>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
-#                  http://www.gnu.org/licenses/
+#                  https://www.gnu.org/licenses/
 ###########################################################################
 
 from sage.structure.element import MultiplicativeGroupElement
 from sage.misc.cachefunc import cached_method
-from sage.arith.all import GCD, LCM
+from sage.arith.misc import GCD
+from sage.arith.functions import lcm as LCM
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
 from sage.rings.infinity import infinity
@@ -298,14 +299,14 @@ class AbelianGroupElementBase(MultiplicativeGroupElement):
                       for e,order in zip(self._exponents, G.gens_orders()) ]
         return G.element_class(G, exponents)
 
-    def inverse(self):
+    def __invert__(self):
         """
-        Returns the inverse element.
+        Return the inverse element.
 
         EXAMPLES::
 
             sage: G.<a,b> = AbelianGroup([0,5])
-            sage: a.inverse()
+            sage: a.inverse()  # indirect doctest
             a^-1
             sage: a.__invert__()
             a^-1
@@ -319,11 +320,9 @@ class AbelianGroupElementBase(MultiplicativeGroupElement):
             (-1, 4)
         """
         G = self.parent()
-        exponents = [ (-e)%order if order!=0 else -e
-                      for e,order in zip(self._exponents, G.gens_orders()) ]
+        exponents = [(-e) % order if order != 0 else -e
+                     for e, order in zip(self._exponents, G.gens_orders())]
         return G.element_class(G, exponents)
-
-    __invert__ = inverse
 
     def is_trivial(self):
         """

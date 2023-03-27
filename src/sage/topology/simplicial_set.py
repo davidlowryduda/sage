@@ -62,7 +62,7 @@ constructed as ::
     sage: simplicial_sets.ClassifyingSpace(Sigma4)
     Classifying space of Symmetric group of order 4! as a permutation group
 
-Type ``simplicial_sets.`` and hit the ``TAB`` key to get a full list
+Type ``simplicial_sets.`` and hit the :kbd:`Tab` key to get a full list
 of the predefined simplicial sets.
 
 You can construct new simplicial sets from old by taking quotients,
@@ -173,7 +173,7 @@ any simplicial set::
     sage: Sigma3 = groups.permutation.Symmetric(3)
     sage: BSigma3 = Sigma3.nerve()
     sage: pi = BSigma3.fundamental_group(); pi
-    Finitely presented group < e0, e1 | e0^2, e1^3, (e0*e1^-1)^2 >
+    Finitely presented group < e1, e2 | e2^2, e1^3, (e2*e1)^2 >
     sage: pi.order()
     6
     sage: pi.is_abelian()
@@ -1661,7 +1661,7 @@ class SimplicialSet_arbitrary(Parent):
 
             sage: Delta3 = simplicial_sets.Simplex(3)
             sage: G = Delta3.graph()
-            sage: G.edges()
+            sage: G.edges(sort=True)
             [((0,), (1,), (0, 1)),
              ((0,), (2,), (0, 2)),
              ((0,), (3,), (0, 3)),
@@ -1672,40 +1672,26 @@ class SimplicialSet_arbitrary(Parent):
             sage: T = simplicial_sets.Torus()
             sage: T.graph()
             Looped multi-graph on 1 vertex
-            sage: len(T.graph().edges())
+            sage: len(T.graph().edges(sort=False))
             3
 
             sage: CP3 = simplicial_sets.ComplexProjectiveSpace(3)
             sage: G = CP3.graph()
-            sage: len(G.vertices())
+            sage: len(G.vertices(sort=False))
             1
-            sage: len(G.edges())
+            sage: len(G.edges(sort=False))
             0
 
             sage: Sigma3 = groups.permutation.Symmetric(3)
             sage: Sigma3.nerve().is_connected()
             True
         """
-        skel = self.n_skeleton(1)
-        edges = skel.n_cells(1)
-        vertices = skel.n_cells(0)
-        used_vertices = set()  # vertices which are in an edge
-        d = {}
-        for e in edges:
-            v = skel.face(e, 0)
-            w = skel.face(e, 1)
-            if v in d:
-                if w in d[v]:
-                    d[v][w] = d[v][w] + [e]
-                else:
-                    d[v][w] = [e]
-            else:
-                d[v] = {w: [e]}
-            used_vertices.update([v, w])
-        for v in vertices:
-            if v not in used_vertices:
-                d[v] = {}
-        return Graph(d, format='dict_of_dicts')
+        G = Graph(loops=True, multiedges=True)
+        for e in self.n_cells(1):
+            G.add_edge(self.face(e,0), self.face(e,1), e)
+        for v in self.n_cells(0):
+            G.add_vertex(v)
+        return G
 
     def is_connected(self):
         """
@@ -3819,7 +3805,9 @@ def standardize_degeneracies(*L):
     - ``L`` -- list of integers, representing a composition of
       degeneracies in a simplicial set.
 
-    OUTPUT: an equivalent list of degeneracies, standardized to be
+    OUTPUT:
+
+    an equivalent list of degeneracies, standardized to be
     written in decreasing order, using the simplicial identity
 
     .. MATH::
@@ -3923,7 +3911,9 @@ def standardize_face_maps(*L):
     - ``L`` -- list of integers, representing a composition of
       face maps in a simplicial set.
 
-    OUTPUT: an equivalent list of face maps, standardized to be
+    OUTPUT:
+
+    an equivalent list of face maps, standardized to be
     written in non-increasing order, using the simplicial identity
 
     .. MATH::

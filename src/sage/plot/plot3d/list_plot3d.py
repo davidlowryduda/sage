@@ -1,5 +1,5 @@
 """
-List Plots
+List plots
 """
 
 from sage.structure.element import is_Matrix
@@ -244,7 +244,7 @@ def list_plot3d(v, interpolation_type='default', point_list=None, **kwds):
         sage: P = list_plot3d([(0, 0, 1), (2, 3, 4)], texture='tomato')
         doctest:warning...:
         DeprecationWarning: please use 'color' instead of 'texture'
-        See https://trac.sagemath.org/27084 for details.
+        See https://github.com/sagemath/sage/issues/27084 for details.
     """
     import numpy
     if 'texture' in kwds:
@@ -506,6 +506,7 @@ def list_plot3d_tuples(v, interpolation_type, **kwds):
         pi = float(pi)
         m = matrix(RDF, 6, [sin(i**2 + j**2) for i in np.linspace(0,pi,6) for j in np.linspace(0,pi,6)])
         sphinx_plot(list_plot3d(m, color='yellow', interpolation_type='spline', frame_aspect_ratio=[1, 1, 1/3]))
+
     ::
 
         sage: show(list_plot3d([[1, 1, 1], [1, 2, 1], [0, 1, 3], [1, 0, 4]], point_list=True))

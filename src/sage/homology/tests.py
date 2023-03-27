@@ -12,14 +12,14 @@ TESTS::
     sage: from sage.homology.tests import test_random_chain_complex
     sage: test_random_chain_complex(trials=20)  # optional - CHomP
     doctest:...: DeprecationWarning: the CHomP interface is deprecated; hence so is this function
-    See http://trac.sagemath.org/33777 for details.
+    See https://github.com/sagemath/sage/issues/33777 for details.
     sage: test_random_chain_complex(level=2, trials=20)  # optional - CHomP
     sage: test_random_chain_complex(level=3, trials=20)  # long time # optional - CHomP
 
     sage: from sage.homology.tests import test_random_simplicial_complex
     sage: test_random_simplicial_complex(level=1, trials=20)  # optional - CHomP
     doctest:...: DeprecationWarning: the CHomP interface is deprecated; hence so is this function
-    See http://trac.sagemath.org/33777 for details.
+    See https://github.com/sagemath/sage/issues/33777 for details.
     sage: test_random_simplicial_complex(level=2, trials=20)  # optional - CHomP
     sage: test_random_simplicial_complex(level=5/2, trials=10)  # long time # optional - CHomP
 """
@@ -47,9 +47,9 @@ def random_chain_complex(level=1):
 
         sage: from sage.homology.tests import random_chain_complex
         sage: C = random_chain_complex()
-        sage: C
+        sage: C  # random
         Chain complex with at most ... nonzero terms over Integer Ring
-        sage: len(C.nonzero_degrees()) in [1, 2]
+        sage: len(C.nonzero_degrees()) in [0, 1, 2]
         True
         sage: C.degree_of_differential() in [-1, 1]
         True
@@ -61,7 +61,8 @@ def random_chain_complex(level=1):
     mat = random_matrix(ZZ, nrows, ncols, sparse=sparseness)
     dim = randint(-bound, bound)
     deg = 2 * randint(0, 1) - 1  # -1 or 1
-    return ChainComplex({dim: mat}, degree = deg)
+    return ChainComplex({dim: mat}, degree=deg)
+
 
 @random_testing
 def test_random_chain_complex(level=1, trials=1, verbose=False):
@@ -85,7 +86,7 @@ def test_random_chain_complex(level=1, trials=1, verbose=False):
         sage: from sage.homology.tests import test_random_chain_complex
         sage: test_random_chain_complex(trials=2)  # optional - CHomP
         doctest:...: DeprecationWarning: the CHomP interface is deprecated; hence so is this function
-        See http://trac.sagemath.org/33777 for details.
+        See https://github.com/sagemath/sage/issues/33777 for details.
     """
     deprecation(33777, 'the CHomP interface is deprecated; hence so is this function')
     for i in range(trials):
@@ -145,7 +146,7 @@ def test_random_simplicial_complex(level=1, trials=1, verbose=False):
         sage: from sage.homology.tests import test_random_simplicial_complex
         sage: test_random_simplicial_complex(trials=2)  # optional - CHomP
         doctest:...: DeprecationWarning: the CHomP interface is deprecated; hence so is this function
-        See http://trac.sagemath.org/33777 for details.
+        See https://github.com/sagemath/sage/issues/33777 for details.
     """
     deprecation(33777, 'the CHomP interface is deprecated; hence so is this function')
     for i in range(trials):

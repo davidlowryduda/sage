@@ -49,7 +49,7 @@ EXAMPLES::
 from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 from sage.rings.integer_ring import ZZ
 from sage.rings.integer import is_Integer, Integer
-from sage.rings.polynomial.polynomial_element import is_Polynomial
+from sage.rings.polynomial.polynomial_element import Polynomial
 
 from sage.schemes.generic.homset import SchemeHomset_points
 from sage.schemes.generic.morphism import is_SchemeMorphism
@@ -76,13 +76,13 @@ class JacobianHomset_divisor_classes(SchemeHomset_points):
         0. A point P in J = Jac(C), returning P;
 
         1. A point P on the curve C such that J = Jac(C), where C is
-          an odd degree model, returning [P - oo];
+           an odd degree model, returning [P - oo];
 
         2. A pair of points (P, Q) on the curve C such that J = Jac(C),
-          returning [P-Q];
+           returning [P-Q];
 
         3. A list of polynomials (a,b) such that `b^2 + h*b - f = 0 mod a`,
-          returning [(a(x),y-b(x))].
+           returning [(a(x),y-b(x))].
 
         EXAMPLES::
 
@@ -138,15 +138,15 @@ class JacobianHomset_divisor_classes(SchemeHomset_points):
                     P1 = R(P1)
                     P2 = R(P2)
                     return JacobianMorphism_divisor_class_field(self, (P1, P2))
-                if is_Integer(P1) and is_Polynomial(P2):
+                if is_Integer(P1) and isinstance(P2, Polynomial):
                     R = PolynomialRing(self.value_ring(), 'x')
                     P1 = R(P1)
                     return JacobianMorphism_divisor_class_field(self, (P1, P2))
-                if is_Integer(P2) and is_Polynomial(P1):
+                if is_Integer(P2) and isinstance(P1, Polynomial):
                     R = PolynomialRing(self.value_ring(), 'x')
                     P2 = R(P2)
                     return JacobianMorphism_divisor_class_field(self, (P1, P2))
-                if is_Polynomial(P1) and is_Polynomial(P2):
+                if isinstance(P1, Polynomial) and isinstance(P2, Polynomial):
                     return JacobianMorphism_divisor_class_field(self, tuple(P))
                 if is_SchemeMorphism(P1) and is_SchemeMorphism(P2):
                     return self(P1) - self(P2)

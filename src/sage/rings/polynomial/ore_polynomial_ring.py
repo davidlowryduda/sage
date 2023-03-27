@@ -1,5 +1,5 @@
 r"""
-Univariate Ore Polynomial Rings
+Univariate Ore polynomial rings
 
 This module provides the
 :class:`~sage.rings.polynomial.ore_polynomial_ring.OrePolynomialRing`,
@@ -976,7 +976,7 @@ class OrePolynomialRing(UniqueRepresentation, Algebra):
             (3*t^2 + 1)*x^4 + (4*t + 2)*x^3 + (4*t + 1)*x^2
              + (t^2 + 3*t + 3)*x + 3*t^2 + 2*t + 2
 
-        TESTS::
+        TESTS:
 
         If the first tuple element is greater than the second, a
         ``ValueError`` is raised::

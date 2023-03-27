@@ -54,7 +54,7 @@ EXAMPLES::
 # ****************************************************************************
 
 
-from sage.rings.all import Infinity
+from sage.rings.infinity import Infinity
 from sage.symbolic.ring import SR
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
@@ -69,11 +69,11 @@ from sage.rings.finite_rings.integer_mod import mod
 from sage.rings.padics.factory import Qp
 from sage.combinat.combination import Combinations
 from sage.misc.misc_c import prod
-from sage.arith.all import factorial
+from sage.arith.functions import lcm
+from sage.arith.misc import gcd, CRT, factorial
 from sage.matrix.constructor import matrix, identity_matrix, vector, block_matrix, zero_matrix
 from sage.modules.free_module_element import zero_vector
 from itertools import combinations_with_replacement
-from sage.arith.all import gcd, lcm, CRT
 from copy import copy
 import itertools
 
@@ -1595,7 +1595,7 @@ def p_adic_LLL_bound_one_prime(prime, B0, M, M_logp, m0, c3, prec=106):
     m = e * f
     u = 1
     while True:
-        if  prec <= u + c8:
+        if prec <= u + c8:
             return 0, True
 
         # We construct the matrix A as a block matrix
@@ -1781,20 +1781,20 @@ def sieve_ordering(SUK, q):
         sage: SUK = K.S_unit_group(S=3)
         sage: sieve_data = list(sieve_ordering(SUK, 19))
         sage: sieve_data[0]
-        (Fractional ideal (xi - 3),
-         Fractional ideal (-2*xi^2 + 3),
+        (Fractional ideal (-2*xi^2 + 3),
+         Fractional ideal (-xi + 3),
          Fractional ideal (2*xi + 1))
 
         sage: sieve_data[1]
-        (Residue field of Fractional ideal (xi - 3),
-         Residue field of Fractional ideal (-2*xi^2 + 3),
+        (Residue field of Fractional ideal (-2*xi^2 + 3),
+         Residue field of Fractional ideal (-xi + 3),
          Residue field of Fractional ideal (2*xi + 1))
 
         sage: sieve_data[2]
-        ([18, 7, 16, 4], [18, 9, 12, 8], [18, 3, 10, 10])
+        ([18, 12, 16, 8], [18, 16, 10, 4], [18, 10, 12, 10])
 
         sage: sieve_data[3]
-        (486, 648, 11664)
+        (648, 2916, 3888)
     """
 
     K = SUK.number_field()

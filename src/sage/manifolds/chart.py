@@ -477,7 +477,7 @@ class Chart(UniqueRepresentation, SageObject):
         r"""
         Rewrite ``coord_restrictions`` as a ``frozenset``, representing a logical "and", of other clauses.
 
-        Also replace ``list``s by ``frozenset``s, making the result hashable.
+        Also replace ``list`` by ``frozenset`` , making the result hashable.
 
         EXAMPLES::
 
@@ -758,7 +758,7 @@ class Chart(UniqueRepresentation, SageObject):
             doctest:warning...
             DeprecationWarning: Chart.add_restrictions is deprecated; provide the
             restrictions at the time of creating the chart
-            See https://trac.sagemath.org/32102 for details.
+            See https://github.com/sagemath/sage/issues/32102 for details.
             sage: X.valid_coordinates(2+i, 1)
             True
             sage: X.valid_coordinates(i, 1)
@@ -2222,7 +2222,7 @@ class RealChart(Chart):
             doctest:warning...
             DeprecationWarning: Chart.add_restrictions is deprecated; provide the
             restrictions at the time of creating the chart
-            See https://trac.sagemath.org/32102 for details.
+            See https://github.com/sagemath/sage/issues/32102 for details.
             sage: X.valid_coordinates(0,2)
             False
             sage: X.valid_coordinates(0,1/3)

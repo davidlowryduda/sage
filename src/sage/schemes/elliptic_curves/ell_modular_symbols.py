@@ -8,7 +8,7 @@ is known to be modular.  The space is two-dimensional and contains a
 subspace on which complex conjugation acts as multiplication by `+1`
 and one on which it acts by `-1`.
 
-There are three implementations of modular symbols, two within 
+There are three implementations of modular symbols, two within
 ``Sage`` and one in Cremona's ``eclib`` library.
 One can choose here which one is used.
 
@@ -87,19 +87,22 @@ AUTHORS:
 #                  http://www.gnu.org/licenses/
 #*****************************************************************************
 
-from sage.structure.sage_object import SageObject
-from sage.modular.modsym.all import ModularSymbols
+from sage.arith.misc import (kronecker as kronecker_symbol,
+                             next_prime,
+                             prime_divisors,
+                             valuation)
 from sage.databases.cremona import parse_cremona_label
-
-from sage.arith.all import next_prime, kronecker_symbol, prime_divisors, valuation
+from sage.misc.verbose import verbose
+from sage.modular.cusps import Cusps
+from sage.modular.modsym.all import ModularSymbols
 from sage.rings.infinity import unsigned_infinity as infinity
 from sage.rings.integer import Integer
-from sage.modular.cusps import Cusps
-from sage.rings.integer_ring import   ZZ
+from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
-from sage.misc.verbose import verbose
+from sage.structure.sage_object import SageObject
 
-from sage.schemes.elliptic_curves.constructor import EllipticCurve
+from .constructor import EllipticCurve
+
 
 oo = Cusps(infinity)
 zero = Integer(0)
@@ -123,8 +126,8 @@ def modular_symbol_space(E, sign, base_ring, bound=None):
     EXAMPLES::
 
         sage: import sage.schemes.elliptic_curves.ell_modular_symbols
-        sage: E=EllipticCurve('11a1')
-        sage: M=sage.schemes.elliptic_curves.ell_modular_symbols.modular_symbol_space(E,-1,GF(37))
+        sage: E = EllipticCurve('11a1')
+        sage: M = sage.schemes.elliptic_curves.ell_modular_symbols.modular_symbol_space(E,-1,GF(37))
         sage: M
         Modular Symbols space of dimension 1 for Gamma_0(11) of weight 2 with sign -1 over Finite Field of size 37
     """
@@ -244,15 +247,15 @@ class ModularSymbolECLIB(ModularSymbol):
             Modular symbol with sign 1 over Rational Field attached to Elliptic Curve defined by y^2 + y = x^3 - x^2 - 10*x - 20 over Rational Field
             sage: M(0)
             1/5
-            sage: E=EllipticCurve('11a2')
-            sage: M=sage.schemes.elliptic_curves.ell_modular_symbols.ModularSymbolECLIB(E,+1)
+            sage: E = EllipticCurve('11a2')
+            sage: M = sage.schemes.elliptic_curves.ell_modular_symbols.ModularSymbolECLIB(E,+1)
             sage: M(0)
             1
 
         This is a rank 1 case with vanishing positive twists::
 
-            sage: E=EllipticCurve('121b1')
-            sage: M=sage.schemes.elliptic_curves.ell_modular_symbols.ModularSymbolECLIB(E,+1)
+            sage: E = EllipticCurve('121b1')
+            sage: M = sage.schemes.elliptic_curves.ell_modular_symbols.ModularSymbolECLIB(E,+1)
             sage: M(0)
             0
             sage: M(1/7)
@@ -389,26 +392,26 @@ class ModularSymbolSage(ModularSymbol):
 
         EXAMPLES::
 
-            sage: E=EllipticCurve('11a1')
+            sage: E = EllipticCurve('11a1')
             sage: import sage.schemes.elliptic_curves.ell_modular_symbols
-            sage: M=sage.schemes.elliptic_curves.ell_modular_symbols.ModularSymbolSage(E,+1)
+            sage: M = sage.schemes.elliptic_curves.ell_modular_symbols.ModularSymbolSage(E,+1)
             sage: M
             Modular symbol with sign 1 over Rational Field attached to Elliptic Curve defined by y^2 + y = x^3 - x^2 - 10*x - 20 over Rational Field
             sage: M(0)
             1/5
-            sage: E=EllipticCurve('11a2')
-            sage: M=sage.schemes.elliptic_curves.ell_modular_symbols.ModularSymbolSage(E,+1)
+            sage: E = EllipticCurve('11a2')
+            sage: M = sage.schemes.elliptic_curves.ell_modular_symbols.ModularSymbolSage(E,+1)
             sage: M(0)
             1
-            sage: M=sage.schemes.elliptic_curves.ell_modular_symbols.ModularSymbolSage(E,-1)
+            sage: M = sage.schemes.elliptic_curves.ell_modular_symbols.ModularSymbolSage(E,-1)
             sage: M(1/3)
             1/2
 
         This is a rank 1 case with vanishing positive twists.
         The modular symbol is adjusted by -2::
 
-            sage: E=EllipticCurve('121b1')
-            sage: M=sage.schemes.elliptic_curves.ell_modular_symbols.ModularSymbolSage(E,-1,normalize='L_ratio')
+            sage: E = EllipticCurve('121b1')
+            sage: M = sage.schemes.elliptic_curves.ell_modular_symbols.ModularSymbolSage(E,-1,normalize='L_ratio')
             sage: M(1/3)
             1
             sage: M._scaling

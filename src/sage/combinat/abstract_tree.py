@@ -109,6 +109,7 @@ class AbstractTree():
         sage: TestSuite(OrderedTree()).run()
         sage: TestSuite(BinaryTree()).run()
     """
+
     def pre_order_traversal_iter(self):
         r"""
         The depth-first pre-order traversal iterator.
@@ -1828,6 +1829,7 @@ class AbstractClonableTree(AbstractTree):
 
     See also the assumptions in :class:`AbstractTree`.
     """
+
     def check(self):
         """
         Check that ``self`` is a correct tree.
@@ -2044,6 +2046,7 @@ class AbstractLabelledTree(AbstractTree):
 
     .. SEEALSO:: :class:`AbstractTree`
     """
+
     def __init__(self, parent, children, label=None, check=True):
         """
         TESTS::
@@ -2085,7 +2088,7 @@ class AbstractLabelledTree(AbstractTree):
         """
         # We must initialize the label before the subtrees to allows rooted
         # trees canonization. Indeed it needs that ``self``._hash_() is working
-        # at the end of the call super(..., self).__init__(...)
+        # at the end of the call super().__init__(...)
         if isinstance(children, AbstractLabelledTree):
             if label is None:
                 self._label = children._label
@@ -2093,7 +2096,7 @@ class AbstractLabelledTree(AbstractTree):
                 self._label = label
         else:
             self._label = label
-        super(AbstractLabelledTree, self).__init__(parent, children, check=check)
+        super().__init__(parent, children, check=check)
 
     def _repr_(self):
         """
@@ -2211,8 +2214,7 @@ class AbstractLabelledTree(AbstractTree):
             sage: t1 == t2
             False
         """
-        return (super(AbstractLabelledTree, self).__eq__(other) and
-                self._label == other._label)
+        return super().__eq__(other) and self._label == other._label
 
     def _hash_(self):
         """
@@ -2322,6 +2324,7 @@ class AbstractLabelledClonableTree(AbstractLabelledTree,
        here from :class:`~sage.structure.list_clone.ClonableArray`, because it would prevent us to
        inherit later from :class:`~sage.structure.list_clone.ClonableList`.
     """
+
     def set_root_label(self, label):
         """
         Set the label of the root of ``self``.

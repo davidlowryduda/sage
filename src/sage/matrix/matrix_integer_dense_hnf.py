@@ -8,14 +8,13 @@ AUTHORS:
 
 from copy import copy
 
+from sage.arith.misc import CRT_list, previous_prime
+from sage.matrix.constructor import identity_matrix, matrix, random_matrix
 from sage.misc.misc import cputime
 from sage.misc.verbose import verbose
-from sage.matrix.constructor import (random_matrix, matrix, identity_matrix)
-
+from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
 from sage.rings.real_mpfr import RR
-from sage.rings.integer import Integer
-from sage.arith.all import previous_prime, CRT_list
 
 
 def max_det_prime(n):
@@ -617,7 +616,7 @@ def hnf_square(A, proof):
             # weird cases where the det is large.
             # E.g., matrix all of whose rows but 1 are multiplied by some
             # fixed scalar n.
-            raise NotImplementedError("fallback to PARI!")
+            raise NotImplementedError("fallback to PARI")
             # H = W.hermite_form(algorithm='pari')
     else:
         H = W._hnf_mod(2 * g)
@@ -1189,9 +1188,9 @@ def benchmark_hnf(nrange, bits=4):
     EXAMPLES::
 
         sage: import sage.matrix.matrix_integer_dense_hnf as hnf
-        sage: hnf.benchmark_hnf([50,100],32)
-        ('sage', 50, 32, ...),
-        ('sage', 100, 32, ...),
+        sage: hnf.benchmark_hnf([10,25],32)
+        ('sage', 10, 32, ...),
+        ('sage', 25, 32, ...),
     """
     b = 2**bits
     for n in nrange:

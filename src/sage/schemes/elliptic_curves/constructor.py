@@ -27,9 +27,9 @@ import sage.rings.all as rings
 
 import sage.rings.abc
 from sage.rings.polynomial.multi_polynomial_ring import is_MPolynomialRing
-from sage.rings.finite_rings.finite_field_constructor import is_FiniteField
+from sage.rings.finite_rings.finite_field_base import FiniteField
 from sage.rings.number_field.number_field import is_NumberField
-from sage.rings.polynomial.multi_polynomial_element import is_MPolynomial
+from sage.rings.polynomial.multi_polynomial import MPolynomial
 from sage.rings.ring import is_Ring
 
 from sage.categories.fields import Fields
@@ -420,7 +420,7 @@ class EllipticCurveFactory(UniqueFactory):
         if isinstance(parent(x), sage.rings.abc.SymbolicRing):
             x = x._polynomial_(rings.QQ['x', 'y'])
 
-        if is_MPolynomial(x):
+        if isinstance(x, MPolynomial):
             if y is None:
                 x = coefficients_from_Weierstrass_polynomial(x)
             else:
@@ -477,7 +477,7 @@ class EllipticCurveFactory(UniqueFactory):
         elif isinstance(R, sage.rings.abc.pAdicField):
             from .ell_padic_field import EllipticCurve_padic_field
             return EllipticCurve_padic_field(R, x)
-        elif is_FiniteField(R) or (isinstance(R, sage.rings.abc.IntegerModRing) and R.characteristic().is_prime()):
+        elif isinstance(R, FiniteField) or (isinstance(R, sage.rings.abc.IntegerModRing) and R.characteristic().is_prime()):
             from .ell_finite_field import EllipticCurve_finite_field
             return EllipticCurve_finite_field(R, x)
         elif R in _Fields:
@@ -615,7 +615,7 @@ def EllipticCurve_from_j(j, minimal_twist=True):
       minimal conductor; when there is more than one curve with
       minimal conductor, the curve returned is the one whose label
       comes first if the curves are in the CremonaDatabase, otherwise
-      the one whose minimal a-invarinats are first lexicographically.
+      the one whose minimal a-invariants are first lexicographically.
       If `j` is not in `\QQ` this parameter is ignored.
 
     OUTPUT:
@@ -1065,7 +1065,7 @@ def EllipticCurve_from_cubic(F, P=None, morphism=True):
                 (-1/3*z : 3*x : -1/1008*x + 1/1008*y + 1/378*z)
     """
     from sage.schemes.curves.constructor import Curve
-    from sage.matrix.all import Matrix
+    from sage.matrix.constructor import Matrix
     from sage.schemes.elliptic_curves.weierstrass_transform import \
         WeierstrassTransformationWithInverse
 

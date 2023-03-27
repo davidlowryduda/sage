@@ -12,16 +12,14 @@ A (slightly generalized) description of the algorithm can be found in [KS2019]_.
 
 Terminology in this module:
 
-- Coatoms               -- the faces from which all others are constructed in
-                           the face iterator. This will be facets or Vrep.
-                           In non-dual mode, faces are constructed as
-                           intersections of the facets. In dual mode, the are
-                           constructed theoretically as joins of vertices.
-                           The coatoms are repsented as incidences with the
-                           atoms they contain.
-- Atoms                 -- facets or Vrep depending on application of algorithm.
-                           Atoms are repsented as incidences of coatoms they
-                           are contained in.
+- Coatoms -- the faces from which all others are constructed in the
+  face iterator. This will be facets or Vrep.  In non-dual mode, faces
+  are constructed as intersections of the facets. In dual mode, they
+  are constructed theoretically as joins of vertices.  The coatoms are
+  repsented as incidences with the atoms they contain.
+
+- Atoms -- facets or Vrep depending on application of algorithm.  Atoms are
+  represented as incidences of coatoms they are contained in.
 
 .. SEEALSO::
 
@@ -167,7 +165,7 @@ AUTHOR:
 """
 
 #*****************************************************************************
-#       Copyright (C) 2019 Jonathan Kliem <jonathan.kliem@fu-berlin.de>
+#       Copyright (C) 2019 Jonathan Kliem <jonathan.kliem@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -416,7 +414,7 @@ cdef class FaceIterator_base(SageObject):
             self.structure.visited_all[self.structure.dimension -1].n_faces = 0
         else:
             self.structure.visited_all[self.structure.dimension -1].n_faces = 1
-        self.structure.face_status = 0
+        self.structure.face_status = FaceStatus.NOT_INITIALIZED
         self.structure.new_faces[self.structure.dimension - 1].n_faces = self.coatoms.n_faces()
         self.structure.current_dimension = self.structure.dimension - 1
         self.structure.highest_dimension = self.structure.dimension - 1
@@ -462,7 +460,7 @@ cdef class FaceIterator_base(SageObject):
             sage: next(it).ambient_V_indices() == it.current().ambient_V_indices()
             True
         """
-        if unlikely(self.structure.face_status == 0):
+        if unlikely(self.structure.face_status == FaceStatus.NOT_INITIALIZED):
             raise ValueError("iterator not set to a face yet")
         return CombinatorialFace(self)
 
@@ -890,7 +888,7 @@ cdef class FaceIterator_base(SageObject):
             sage: it._meet_of_coatoms(1, 2)
             A -1-dimensional face of a Polyhedron in QQ^2
         """
-        if unlikely(self.structure.face_status != 0):
+        if unlikely(self.structure.face_status != FaceStatus.NOT_INITIALIZED):
             raise ValueError("please reset the face iterator")
         if unlikely(self.structure.output_dimension != -2):
             raise ValueError("face iterator must not have the output dimension specified")
@@ -996,7 +994,7 @@ cdef class FaceIterator_base(SageObject):
             ...
             IndexError: atoms out of range
         """
-        if unlikely(self.structure.face_status != 0):
+        if unlikely(self.structure.face_status != FaceStatus.NOT_INITIALIZED):
             raise ValueError("please reset the face iterator")
         if unlikely(self.structure.output_dimension != -2):
             raise ValueError("face iterator must not have the output dimension specified")
@@ -1051,14 +1049,14 @@ cdef class FaceIterator_base(SageObject):
         See :meth:`FaceIterator_base.ignore_subfaces` and
         :meth:`FaceIterator_base.ignore_supfaces`.
         """
-        if unlikely(self.structure.face_status == 0):
+        if unlikely(self.structure.face_status == FaceStatus.NOT_INITIALIZED):
             raise ValueError("iterator not set to a face yet")
-        if unlikely(self.structure.face_status == 3):
+        if unlikely(self.structure.face_status == FaceStatus.ONLY_VISIT_SUBSETS):
             # The iterator is consumed, if it was just set to visit only subsets
             # next thing to ignore subsets.
             self.structure.current_dimension = self.structure.dimension
             return 0
-        if unlikely(self.structure.face_status == 2):
+        if unlikely(self.structure.face_status == FaceStatus.IGNORE_SUBSETS):
             # Nothing to do.
             return 0
         # The current face is added to ``visited_all``.
@@ -1067,7 +1065,7 @@ cdef class FaceIterator_base(SageObject):
         # as there are no new faces.
 
         add_face_shallow(self.structure.visited_all[self.structure.current_dimension], self.structure.face)
-        self.structure.face_status = 2
+        self.structure.face_status = FaceStatus.IGNORE_SUBSETS
 
     def only_subfaces(self):
         r"""
@@ -1119,7 +1117,7 @@ cdef class FaceIterator_base(SageObject):
             ...
             ValueError: only possible when not in dual mode
 
-        Cannot run ``only_subfaces`` after ``ignore_subfaces::
+        Cannot run ``only_subfaces`` after ``ignore_subfaces``::
 
             sage: it = C.face_generator()
             sage: _ = next(it)
@@ -1179,9 +1177,9 @@ cdef class FaceIterator_base(SageObject):
         See :meth:`FaceIterator_base.only_subfaces` and
         :meth:`FaceIterator_base.only_supfaces`.
         """
-        if unlikely(self.structure.face_status == 0):
+        if unlikely(self.structure.face_status == FaceStatus.NOT_INITIALIZED):
             raise ValueError("iterator not set to a face yet")
-        if unlikely(self.structure.face_status == 2):
+        if unlikely(self.structure.face_status == FaceStatus.IGNORE_SUBSETS):
             raise ValueError("cannot only visit subsets after ignoring a face")
 
         cdef face_list_t* faces = &self.structure.new_faces[self.structure.current_dimension]
@@ -1193,7 +1191,7 @@ cdef class FaceIterator_base(SageObject):
 
         swap_faces(faces[0].faces[yet_to_visit], faces[0].faces[faces[0].n_faces - 1])
 
-        self.structure.face_status = 3
+        self.structure.face_status = FaceStatus.ONLY_VISIT_SUBSETS
         self.structure.yet_to_visit = 0
         # This will work:
         # ``next_dimension`` will first call ``next_face_loop`` and then check
@@ -1283,13 +1281,13 @@ cdef class FaceIterator_base(SageObject):
         if n_atoms == self.coatoms.n_atoms():
             # The face is the universe.
             self.structure.face[0] = face[0]
-            self.structure.face_status = 1
+            self.structure.face_status = FaceStatus.INITIALIZED
             self.structure.current_dimension = self.structure.dimension
             return 0
         elif n_atoms == 0:
             # The face is the empty face.
             self.structure.face[0] = face[0]
-            self.structure.face_status = 1
+            self.structure.face_status = FaceStatus.INITIALIZED
             self.structure.current_dimension = -1
             return 0
 
@@ -1466,84 +1464,93 @@ cdef class FaceIterator(FaceIterator_base):
 
     ALGORITHM:
 
-    For the special case that the all intervals of the lattice not containing zero are boolean
-    (e.g. when the polyhedron is simple) the algorithm is modified. See below.
-
-
-    A (slightly generalized) description of the algorithm can be found in [KS2019]_.
-
     The algorithm to visit all proper faces exactly once is roughly
-    equivalent to::
+    equivalent to the following. A (slightly generalized) description of the
+    algorithm can be found in [KS2019]_.
+
+    Initialization::
 
         faces = [set(facet) for facet in P.facets()]
         face_iterator(faces, [])
 
+    The function ``face_iterator`` is defined recursively. It visits all faces of
+    the polyhedron `P`, except those contained in any of ``visited_all``.
+    It assumes ``faces`` to be exactly those facets of `P`
+    that are not contained in any of the ``visited_all``.
+    It assumes ``visited_all`` to be some list of faces of
+    a polyhedron `P_2`, which contains `P` as one of its faces::
+
         def face_iterator(faces, visited_all):
-            # Visit all faces of a polyhedron `P`, except those contained in
-            # any of the visited all.
-
-            # Assumes ``faces`` to be exactly those facets of `P`
-            # that are not contained in any of the ``visited_all``.
-
-            # Assumes ``visited_all`` to be some list of faces of
-            # a polyhedron `P_2`, which contains `P` as one of its faces.
-
             while facets:
                 one_face = faces.pop()
-                new_faces = [one_face.intersection(face) for face in faces]
+                maybe_new_faces = [one_face.intersection(face) for face in faces]
+        ...
 
-                # ``maybe_new_faces`` contains all facets of ``one_face``,
-                # which we have not visited before.
-                # Proof: Let `F` be a facet of ``one_face``.
-                # We have a chain:
-                # `P` ⊃ ``one_face`` ⊃ `F`.
-                # By diamond property there exists ``second_face`` with:
-                # `P` ⊃ ``second_face`` ⊃ `F`.
+    At this point we claim that ``maybe_new_faces`` contains all facets of ``one_face``,
+    which we have not visited before.
 
-                # Either ``second_face`` is not an element of ``faces``:
-                #     Hence ``second_face`` is contained in one of ``visited_all``.
-                #     In particular, `F` is contained in ``visited_all``.
-                # Or ``second_face`` is an element of ``faces``:
-                #     Then, intersecting ``one_face`` with ``second_face`` gives
-                #     ``F``. ∎
+    Proof: Let `F` be a facet of ``one_face``. We have a chain:
+    `P \supset{}` ``one_face`` `{}\supset F`.
+    By the diamond property, there exists a ``second_face`` with
+    `P \supset{}` ``second_face`` `{}\supset F`.
 
-                # If an element in ``maybe_new_faces`` is inclusion maximal
-                # and not contained in any of the ``visited_all``,
-                # it is a facet of ``one_face``.
-                # Any facet in ``maybe_new_faces`` of ``one_face``
-                # is inclusion maximal.
+    Now either ``second_face`` is not an element of ``faces``:
+    Hence ``second_face`` is contained in one of ``visited_all``.
+    In particular, `F` is contained in ``visited_all``.
+
+    Or ``second_face`` is an element of ``faces``:
+    Then, intersecting ``one_face`` with ``second_face`` gives ``F``.
+
+    This concludes the proof.
+
+    Moreover, if an element in ``maybe_new_faces`` is inclusion-maximal
+    and not contained in any of the ``visited_all``, it is a facet of ``one_face``.
+    Any facet in ``maybe_new_faces`` of ``one_face`` is inclusion-maximal.
+
+    Hence, in the following loop, an element ``face1`` in ``maybe_new_faces``
+    is a facet of ``one_face`` if and only if it is not contained in another facet::
+
+        ...
                 maybe_new_faces2 = []
                 for i, face1 in enumerate(maybe_new_faces):
-                    # ``face1`` is a facet of ``one_face``,
-                    # iff it is not contained in another facet.
                     if (all(not face1 < face2 for face2 in maybe_new_faces[:i])
                             and all(not face1 <= face2 for face2 in maybe_new_faces[i+1:])):
                         maybe_new_faces2.append(face1)
+        ...
 
-                # ``maybe_new_faces2`` contains only facets of ``one_face``
-                # and some faces contained in any of ``visited_all``.
-                # It also contains all the facets not contained in any of ``visited_all``.
-                # Let ``new_faces`` be the list of all facets of ``one_face``
-                # not contained in any of ``visited_all``.
+    Now ``maybe_new_faces2`` contains only facets of ``one_face``
+    and some faces contained in any of ``visited_all``.
+    It also contains all the facets not contained in any of ``visited_all``.
+
+    We construct ``new_faces`` as the list of all facets of ``one_face``
+    not contained in any of ``visited_all``::
+
+        ...
                 new_faces = []
                 for face1 in maybe_new_faces2:
                     if all(not face1 < face2 for face2 in visited_all):
                         new_faces.append(face1)
+        ...
 
-                # By induction we can apply the algorithm, to visit all
-                # faces of ``one_face`` not contained in ``visited_all``:
+    By induction we can apply the algorithm, to visit all
+    faces of ``one_face`` not contained in ``visited_all``::
+
+        ...
                 face_iterator(new_faces, visited_all)
+        ...
 
-                # Finally visit ``one_face`` and add it to ``visited_all``:
+    Finally we visit ``one_face`` and add it to ``visited_all``::
+
+        ...
                 visit(one_face)
                 visited_all.append(one_face)
 
-                # Note: At this point, we have visited exactly those faces,
-                # contained in any of the ``visited_all``.
+    Note: At this point, we have visited exactly those faces,
+    contained in any of the ``visited_all``. The function ends here.
 
 
-    For the special case that the all intervals of the lattice not containing zero are boolean
-    (e.g. when the polyhedron is simple), the algorithm can be modified.
+    ALGORITHM for the special case that all intervals of the lattice not
+    containing zero are boolean (e.g. when the polyhedron is simple):
 
     We do not assume any other properties of our lattice in this case.
     Note that intervals of length 2 not containing zero, have exactly 2 elements now.
@@ -1921,7 +1928,7 @@ cdef inline int next_dimension(iter_t structure, size_t parallelization_depth=0)
     e.g. if it is ``1`` it will stop after having yield all faces of a facet
     """
     cdef int max_dim = structure.highest_dimension - parallelization_depth
-    structure.face_status = 0
+    structure.face_status = FaceStatus.NOT_INITIALIZED
     while (not next_face_loop(structure)) and (structure.current_dimension <= max_dim):
         sig_check()
     structure._index += 1
@@ -1952,7 +1959,7 @@ cdef inline int next_face_loop(iter_t structure) nogil except -1:
         # Set ``face`` to the next face.
         structure.yet_to_visit -= 1
         structure.face[0] = faces[0].faces[structure.yet_to_visit][0]
-        structure.face_status = 1
+        structure.face_status = FaceStatus.INITIALIZED
         return 1
 
     if structure.current_dimension <= structure.lowest_dimension:

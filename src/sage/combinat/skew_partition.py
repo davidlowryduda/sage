@@ -126,6 +126,7 @@ AUTHORS:
 
 - Mike Hansen: Initial version
 - Travis Scrimshaw (2013-02-11): Factored out ``CombinatorialClass``
+- Trevor K. Karn (2022-08-03): Add ``outside_corners``
 """
 #*****************************************************************************
 #       Copyright (C) 2007 Mike Hansen <mhansen@gmail.com>,
@@ -158,6 +159,7 @@ from sage.combinat.combinat import CombinatorialElement
 from sage.combinat.partition import Partitions, _Partitions
 from sage.combinat.tableau import Tableaux
 from sage.combinat.composition import Compositions
+
 
 class SkewPartition(CombinatorialElement):
     r"""
@@ -267,8 +269,16 @@ class SkewPartition(CombinatorialElement):
             &\lr{\ast}&\lr{\ast}\\\cline{2-3}
             \end{array}$}
             }
+
+        TESTS:
+
+        Check that :trac:`34760` is fixed::
+
+            sage: print(SkewPartition([[],[]])._latex_diagram())
+            {\emptyset}
+
         """
-        if len(self._list) == 0:
+        if not any(self._list):
             return "{\\emptyset}"
 
         char = self.parent().options.latex_diagram_str
@@ -294,8 +304,15 @@ class SkewPartition(CombinatorialElement):
             &\lr{\phantom{x}}&\lr{\phantom{x}}\\\cline{2-3}
             \end{array}$}
             }
+
+        TESTS:
+
+        Check that :trac:`34760` is fixed::
+
+            sage: print(SkewPartition([[],[]])._latex_young_diagram())
+            {\emptyset}
         """
-        if len(self._list) == 0:
+        if not any(self._list):
             return "{\\emptyset}"
 
         from sage.combinat.output import tex_from_array
@@ -319,8 +336,15 @@ class SkewPartition(CombinatorialElement):
             \lr{X}&\lr{\phantom{x}}&\lr{\phantom{x}}\\\cline{1-3}
             \end{array}$}
             }
+
+        TESTS:
+
+        Check that :trac:`34760` is fixed::
+
+            sage: print(SkewPartition([[],[]])._latex_marked())
+            {\emptyset}
         """
-        if len(self._list) == 0:
+        if not any(self._list):
             return "{\\emptyset}"
 
         from sage.combinat.output import tex_from_array
@@ -636,13 +660,14 @@ class SkewPartition(CombinatorialElement):
 
     def is_ribbon(self):
         r"""
-        Return ``True`` if and only if ``self`` is a ribbon, that is,
-        if it has exactly one cell in each of `q` consecutive
-        diagonals for some nonnegative integer `q`.
+        Return ``True`` if and only if ``self`` is a ribbon.
+
+        This means that if it has exactly one cell in each of `q`
+        consecutive diagonals for some nonnegative integer `q`.
 
         EXAMPLES::
 
-            sage: P=SkewPartition([[4,4,3,3],[3,2,2]])
+            sage: P = SkewPartition([[4,4,3,3],[3,2,2]])
             sage: P.pp()
                *
               **
@@ -651,7 +676,7 @@ class SkewPartition(CombinatorialElement):
             sage: P.is_ribbon()
             True
 
-            sage: P=SkewPartition([[4,3,3],[1,1]])
+            sage: P = SkewPartition([[4,3,3],[1,1]])
             sage: P.pp()
              ***
              **
@@ -659,7 +684,7 @@ class SkewPartition(CombinatorialElement):
             sage: P.is_ribbon()
             False
 
-            sage: P=SkewPartition([[4,4,3,2],[3,2,2]])
+            sage: P = SkewPartition([[4,4,3,2],[3,2,2]])
             sage: P.pp()
                *
               **
@@ -668,7 +693,7 @@ class SkewPartition(CombinatorialElement):
             sage: P.is_ribbon()
             False
 
-            sage: P=SkewPartition([[4,4,3,3],[4,2,2,1]])
+            sage: P = SkewPartition([[4,4,3,3],[4,2,2,1]])
             sage: P.pp()
             <BLANKLINE>
               **
@@ -677,7 +702,7 @@ class SkewPartition(CombinatorialElement):
             sage: P.is_ribbon()
             True
 
-            sage: P=SkewPartition([[4,4,3,3],[4,2,2]])
+            sage: P = SkewPartition([[4,4,3,3],[4,2,2]])
             sage: P.pp()
             <BLANKLINE>
               **
@@ -739,6 +764,22 @@ class SkewPartition(CombinatorialElement):
     def outer_corners(self):
         """
         Return a list of the outer corners of ``self``.
+
+        These are corners that are contained inside of the shape.
+        For the corners which are outside of the shape,
+        use :meth:`outside_corners`.
+
+        .. WARNING::
+
+            In the case that ``self`` is an honest (rather than skew) partition,
+            these are the :meth:`~sage.combinat.partition.Partition.corners`
+            of the outer partition. In the language of [Sag2001]_ these would
+            be the "inner corners" of the outer partition.
+
+        .. SEEALSO::
+
+            - :meth:`sage.combinat.skew_partition.SkewPartition.outside_corners`
+            - :meth:`sage.combinat.partition.Partition.outside_corners`
 
         EXAMPLES::
 
@@ -1028,17 +1069,17 @@ class SkewPartition(CombinatorialElement):
         EXAMPLES::
 
             sage: dag = SkewPartition([[3, 3, 1], [1, 1]]).to_dag()
-            sage: dag.edges()
+            sage: dag.edges(sort=True)
             [('0,1', '0,2', None),
             ('0,1', '1,1', None),
             ('0,2', '1,2', None),
             ('1,1', '1,2', None)]
-            sage: dag.vertices()
+            sage: dag.vertices(sort=True)
             ['0,1', '0,2', '1,1', '1,2', '2,0']
             sage: dag = SkewPartition([[3, 2, 1], [1, 1]]).to_dag(format="tuple")
-            sage: dag.edges()
+            sage: dag.edges(sort=True)
             [((0, 1), (0, 2), None), ((0, 1), (1, 1), None)]
-            sage: dag.vertices()
+            sage: dag.vertices(sort=True)
             [(0, 1), (0, 2), (1, 1), (2, 0)]
         """
         outer = list(self.outer())
@@ -1208,6 +1249,33 @@ class SkewPartition(CombinatorialElement):
             m.append(row)
         return H(m)
 
+    def outside_corners(self):
+        r"""
+        Return the outside corners of ``self``.
+
+        The outside corners are corners which are outside of the shape. This
+        should not be confused with :meth:`outer_corners` which consists of
+        corners inside the shape. It returns a result analogous to the
+        ``.outside_corners()`` method on (non-skew) ``Partitions``.
+
+        .. SEEALSO::
+
+            - :meth:`sage.combinat.skew_partition.SkewPartition.outer_corners`
+            - :meth:`sage.combinat.partition.Partition.outside_corners`
+
+        EXAMPLES::
+
+            sage: mu = SkewPartition([[3,2,1],[2,1]])
+            sage: mu.pp()
+              *
+             *
+            *
+            sage: mu.outside_corners()
+            [(0, 3), (1, 2), (2, 1), (3, 0)]
+        """
+        return self.outer().outside_corners()
+
+
 def row_lengths_aux(skp):
     """
     EXAMPLES::
@@ -1222,6 +1290,7 @@ def row_lengths_aux(skp):
         return []
     else:
         return [x[0] - x[1] for x in zip(skp[0], skp[1])]
+
 
 class SkewPartitions(UniqueRepresentation, Parent):
     """
@@ -1529,6 +1598,7 @@ class SkewPartitions_all(SkewPartitions):
     """
     Class of all skew partitions.
     """
+
     def __init__(self):
         """
         Initialize ``self``.
@@ -1575,6 +1645,7 @@ class SkewPartitions_all(SkewPartitions):
                 yield self.element_class(self, p)
             n += 1
 
+
 class SkewPartitions_n(SkewPartitions):
     """
     The set of skew partitions of ``n`` with overlap at least
@@ -1612,7 +1683,7 @@ class SkewPartitions_n(SkewPartitions):
         """
         if overlap == 'connected':
             overlap = 1
-        return super(cls, SkewPartitions_n).__classcall__(cls, n, overlap)
+        return super().__classcall__(cls, n, overlap)
 
     def __init__(self, n, overlap):
         """
@@ -1804,6 +1875,8 @@ class SkewPartitions_n(SkewPartitions):
 ######################################
 # Skew Partitions (from row lengths) #
 ######################################
+
+
 class SkewPartitions_rowlengths(SkewPartitions):
     """
     All skew partitions with given row lengths.
@@ -1823,7 +1896,7 @@ class SkewPartitions_rowlengths(SkewPartitions):
         co = Compositions()(co)
         if overlap == 'connected':
             overlap = 1
-        return super(SkewPartitions_rowlengths, cls).__classcall__(cls, co, overlap)
+        return super().__classcall__(cls, co, overlap)
 
     def __init__(self, co, overlap):
         """
@@ -1919,6 +1992,7 @@ class SkewPartitions_rowlengths(SkewPartitions):
         for sskp in SkewPartitions(row_lengths=self.co[:-1], overlap=self.overlap):
             for sp in self._from_row_lengths_aux(sskp, self.co[-2], self.co[-1], self.overlap):
                 yield self.element_class(self, sp)
+
 
 from sage.misc.persist import register_unpickle_override
 register_unpickle_override('sage.combinat.skew_partition', 'SkewPartition_class', SkewPartition)

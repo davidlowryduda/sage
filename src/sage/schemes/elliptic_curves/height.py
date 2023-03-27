@@ -42,7 +42,8 @@ from sage.rings.real_mpfr import RR
 
 from sage.misc.cachefunc import cached_method
 from sage.misc.mrange import cartesian_product_iterator
-from sage.arith.all import lcm, factorial
+from sage.arith.functions import lcm
+from sage.arith.misc import factorial
 from sage.ext.fast_callable import fast_callable
 from sage.functions.log import log, exp
 from sage.symbolic.ring import SR
@@ -1216,7 +1217,7 @@ class EllipticCurveCanonicalHeight:
             ([0.0781194447253472, 0.0823423732016403] U [0.917657626798360, 0.921880555274653])
         """
         L = self.E.period_lattice(v)
-        w1, w2 = L.basis(prec = v.codomain().prec())
+        w1, w2 = L.basis(prec=v.codomain().prec())
         beta = L.elliptic_exponential(w1/2)[0]
         if xi2 < beta:
             return UnionOfIntervals([])

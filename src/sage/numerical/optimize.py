@@ -420,9 +420,10 @@ def minimize(func, x0, gradient=None, hessian=None, algorithm="default",
                 hessian=lambda p: [[a(*p) for a in row] for row in hess_fast]
                 from scipy import dot
                 hessian_p=lambda p,v: dot(numpy.array(hessian(p)),v)
-                min = optimize.fmin_ncg(f, [float(_) for _ in x0], fprime=gradient, \
+                min = optimize.fmin_ncg(f, [float(_) for _ in x0], fprime=gradient,
                       fhess=hessian, fhess_p=hessian_p, disp=verbose, **args)
     return vector(RDF, min)
+
 
 def minimize_constrained(func,cons,x0,gradient=None,algorithm='default', **args):
     r"""
@@ -617,7 +618,7 @@ def linear_program(c, G, h, A=None, b=None, solver=None):
         sage: sol=linear_program(c,G,h)                                                # optional - cvxopt
         doctest:warning...
         DeprecationWarning: linear_program is deprecated; use MixedIntegerLinearProgram instead
-        See https://trac.sagemath.org/32226 for details.
+        See https://github.com/sagemath/sage/issues/32226 for details.
         sage: sol['x']                                                                 # optional - cvxopt
         (0.999..., 1.000...)
 
@@ -926,7 +927,7 @@ def binpacking(items, maximum=1, k=None, solver=None, verbose=0,
         sage: binpacking([0.2,0.3,0.8,0.9], k=2)
         Traceback (most recent call last):
         ...
-        ValueError: this problem has no solution !
+        ValueError: this problem has no solution
 
     We can also provide a dictionary keyed by items and associating to each item
     its weight. Then, the bins contain the name of the items inside it ::
@@ -953,7 +954,7 @@ def binpacking(items, maximum=1, k=None, solver=None, verbose=0,
         raise TypeError("parameter items must be a list or a dictionary.")
 
     if max(weight.values()) > maximum:
-        raise ValueError("this problem has no solution !")
+        raise ValueError("this problem has no solution")
 
     if k is None:
         from sage.functions.other import ceil
@@ -983,7 +984,7 @@ def binpacking(items, maximum=1, k=None, solver=None, verbose=0,
     try:
         p.solve(log=verbose)
     except MIPSolverException:
-        raise ValueError("this problem has no solution !")
+        raise ValueError("this problem has no solution")
 
     box = p.get_values(box, convert=bool, tolerance=integrality_tolerance)
 

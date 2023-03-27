@@ -190,14 +190,12 @@ def three_n_minus_eight(B):
         for i in range(3):
             Y.append([r(i,x) if x<= n-5 else x+2*(n-4) for x in s])
 
-
     # Line 3.
     for a in range(4):
         for aa in range(n-4):
             for aaa in range(n-4):
                 aaaa = -(a+aa+aaa)%(n-4)
                 Y.append([r(0,aa),r(1,aaa), r(2,aaaa),3*(n-4)+a])
-
 
     # Line 4.
     k = (n-14) // 12
@@ -269,7 +267,7 @@ def three_n_minus_four(B):
 
     # Line 5.
     from sage.graphs.graph_coloring import round_robin
-    one_factorization = round_robin(2*(6*k+4)).edges()
+    one_factorization = round_robin(2*(6*k+4)).edges(sort=True)
     color_classes = [[] for _ in repeat(None, 2*(6*k+4)-1)]
     for u, v, l in one_factorization:
         color_classes[l].append((u,v))
@@ -335,8 +333,6 @@ def four_n_minus_six(B):
                         Y.append([r(h,0,2*c+eps)  , r(h,1,2*cc-eps), r(h+1,0,rc), r(h+1,0,sc)])
                         Y.append([r(h,0,2*c-1+eps), r(h,1,2*cc-eps), r(h+1,1,rc), r(h+1,1,sc)])
 
-
-
     # Line 8/9
     for h in range(2):
         for eps in range(2):
@@ -346,7 +342,6 @@ def four_n_minus_six(B):
                         cc = -(c+ccc)%k
                         Y.append([r(h,0,2*c+eps)  , r(h,1,2*cc-eps), r(h+1,1,rc), r(h+1,1,sc)])
                         Y.append([r(h,0,2*c-1+eps), r(h,1,2*cc-eps), r(h+1,0,rc), r(h+1,0,sc)])
-
 
     # Line 10
     for h in range(2):
@@ -741,10 +736,10 @@ def steiner_quadruple_system(n, check = False):
         nn = (n+10) // 12
         sqs = twelve_n_minus_ten(steiner_quadruple_system(nn, check = False))
     else:
-        raise ValueError("This shouldn't happen !")
+        raise ValueError("this should never happen")
 
     if check and not sqs.is_t_design(3,n,4,1):
-        raise RuntimeError("Something is very very wrong.")
+        raise RuntimeError("something is very very wrong")
 
     return sqs
 

@@ -228,10 +228,10 @@ from sage.misc.flatten import flatten
 from sage.misc.lazy_attribute import lazy_attribute
 from sage.misc.misc_c import prod
 from sage.misc.prandom import randint
-from sage.arith.all import factorial
+from sage.arith.misc import factorial
 from sage.rings.finite_rings.integer_mod_ring import IntegerModRing
 from sage.rings.integer import Integer
-from sage.rings.semirings.all import NN
+from sage.rings.semirings.non_negative_integer_semiring import NN
 from sage.sets.disjoint_union_enumerated_sets import DisjointUnionEnumeratedSets
 from sage.sets.family import Family
 from sage.sets.positive_integers import PositiveIntegers
@@ -363,7 +363,7 @@ class TableauTuple(CombinatorialElement):
 
         EXAMPLES::
 
-            sage: t=TableauTuple([[[1,1],[1]],[[1,1,1]],[[1],[1],[1]],[[1]]])
+            sage: t = TableauTuple([[[1,1],[1]],[[1,1,1]],[[1],[1],[1]],[[1]]])
             sage: t.parent()
             Tableau tuples
             sage: t.category()
@@ -526,7 +526,7 @@ class TableauTuple(CombinatorialElement):
 
         EXAMPLES::
 
-            sage: t=TableauTuple([ [[1,2],[3]], [], [[4,5],[6,7]] ])
+            sage: t = TableauTuple([ [[1,2],[3]], [], [[4,5],[6,7]] ])
             sage: latex(t)    # indirect doctest
             \Bigg( {\def\lr#1{\multicolumn{1}{|@{\hspace{.6ex}}c@{\hspace{.6ex}}|}{\raisebox{-.3ex}{$#1$}}}
             \raisebox{-.6ex}{$\begin{array}[b]{*{2}c}\cline{1-2}
@@ -1498,7 +1498,7 @@ class RowStandardTableauTuple(TableauTuple, metaclass=ClasscallMetaclass):
 
         EXAMPLES::
 
-            sage: t=RowStandardTableauTuple([[[3,4,6],[1]],[[2],[5]]])
+            sage: t = RowStandardTableauTuple([[[3,4,6],[1]],[[2],[5]]])
             sage: t.parent()
             Row standard tableau tuples
             sage: t.category()
@@ -1769,8 +1769,8 @@ class StandardTableauTuple(RowStandardTableauTuple):
     is the size of the underlying partition tuple, such that the entries
     increase along rows and down columns in each component of the tuple.
 
-            sage: s=StandardTableauTuple([[1,2,3],[4,5]])
-            sage: t=StandardTableauTuple([[1,2],[3,5],[4]])
+            sage: s = StandardTableauTuple([[1,2,3],[4,5]])
+            sage: t = StandardTableauTuple([[1,2],[3,5],[4]])
             sage: s.dominates(t)
             True
             sage: t.dominates(s)
@@ -1804,7 +1804,8 @@ class StandardTableauTuple(RowStandardTableauTuple):
 
     EXAMPLES::
 
-        sage: t=TableauTuple([ [[1,3,4],[7,9]], [[2,8,11],[6]], [[5,10]] ]); t
+        sage: t = TableauTuple([ [[1,3,4],[7,9]], [[2,8,11],[6]], [[5,10]] ])
+        sage: t
         ([[1, 3, 4], [7, 9]], [[2, 8, 11], [6]], [[5, 10]])
         sage: t[0][0][0]
         1
@@ -1884,7 +1885,7 @@ class StandardTableauTuple(RowStandardTableauTuple):
 
         EXAMPLES::
 
-            sage: t=StandardTableauTuple([[[1,3,4],[6]],[[2],[5]]])
+            sage: t = StandardTableauTuple([[[1,3,4],[6]],[[2],[5]]])
             sage: t.parent()
             Standard tableau tuples
             sage: t.category()
@@ -2979,6 +2980,7 @@ class RowStandardTableauTuples_all(RowStandardTableauTuples, DisjointUnionEnumer
     Default class of all :class:`RowStandardTableauTuples` with an arbitrary
     :meth:`~TableauTuples.level` and :meth:`~TableauTuples.size`.
     """
+
     def __init__(self):
         r"""
         Initializes the class of all row standard tableaux.
@@ -3029,6 +3031,7 @@ class RowStandardTableauTuples_level(RowStandardTableauTuples, DisjointUnionEnum
     Class of all :class:`RowStandardTableauTuples` with a fixed ``level``
     and arbitrary ``size``.
     """
+
     def __init__(self, level):
         r"""
         Initializes the class of row standard tableaux of level
@@ -3126,6 +3129,7 @@ class RowStandardTableauTuples_size(RowStandardTableauTuples, DisjointUnionEnume
     Class of all :class:`RowStandardTableauTuples` with an arbitrary ``level``
     and a fixed ``size``.
     """
+
     def __init__(self, size):
         r"""
         Initializes the class of row standard tableaux of size ``size`` of
@@ -3225,6 +3229,7 @@ class RowStandardTableauTuples_level_size(RowStandardTableauTuples, DisjointUnio
     Class of all :class:`RowStandardTableauTuples` with a fixed ``level``
     and a fixed ``size``.
     """
+
     def __init__(self, level, size):
         r"""
         Initializes the class of row standard tableaux of level ``level``
@@ -3338,6 +3343,7 @@ class RowStandardTableauTuples_shape(RowStandardTableauTuples):
     """
     Class of all :class:`RowStandardTableauTuples` of a fixed shape.
     """
+
     def __init__(self, shape):
         r"""
         Initializes the class of row standard tableaux of shape ``p``
@@ -3562,6 +3568,7 @@ class RowStandardTableauTuples_residue(RowStandardTableauTuples):
         sage: RowStandardTableauTuple([[[5,6],[7]],[[1,2,3],[4]]]).residue_sequence(3,(0,1)).row_standard_tableaux()
         Row standard tableaux with 3-residue sequence (1,2,0,0,0,1,2) and multicharge (0,1)
     """
+
     def __init__(self, residue):
         r"""
         Initialize ``self``.
@@ -3803,6 +3810,7 @@ class RowStandardTableauTuples_residue_shape(RowStandardTableauTuples_residue):
          ([[5, 6], [4]], [[3, 7], [1], [2]]),
          ([[5, 6], [1]], [[3, 7], [4], [2]])]
     """
+
     def __init__(self, residue, shape):
         r"""
         Initialize ``self``.
@@ -5070,6 +5078,7 @@ class StandardTableaux_residue(StandardTableauTuples):
         sage: StandardTableauTuple([[[5,6],[7]],[[1,2,3],[4]]]).residue_sequence(3,(0,1)).standard_tableaux()
         Standard tableaux with 3-residue sequence (1,2,0,0,0,1,2) and multicharge (0,1)
     """
+
     def __init__(self, residue):
         r"""
         Initialize ``self``.
@@ -5205,6 +5214,7 @@ class StandardTableaux_residue_shape(StandardTableaux_residue):
          ([[2, 5], [6]], [[1, 3], [4], [7]]),
          ([[1, 5], [6]], [[2, 3], [4], [7]])]
     """
+
     def __init__(self, residue, shape):
         r"""
         Initialize ``self``.

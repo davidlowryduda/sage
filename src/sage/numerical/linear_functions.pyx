@@ -1064,7 +1064,7 @@ cdef class LinearFunction(LinearFunctionOrConstraint):
             sage: f._coeff_formatter(sqrt5)
             'sqrt5*'
 
-            sage: from sage.rings.all import AA
+            sage: from sage.rings.qqbar import AA
             sage: sqrt5 = AA(5).sqrt()
             sage: p = MixedIntegerLinearProgram(solver='interactivelp', base_ring=AA)
             sage: LF = p.linear_functions_parent()
@@ -1427,7 +1427,7 @@ cdef class LinearConstraint(LinearFunctionOrConstraint):
             x_0 + 2*x_1 <= -5 + x_2
         """
         assert len(terms) > 0
-        super(LinearConstraint, self).__init__(parent)
+        super().__init__(parent)
         self.equality = equality
         LF = parent.linear_functions_parent()
         self.constraints = [ LF(term) for term in terms ]

@@ -225,7 +225,7 @@ from sage.misc.cachefunc import cached_method
 
 from sage.interfaces.singular import singular
 
-from sage.arith.all import lcm
+from sage.arith.functions import lcm
 
 from sage.rings.integer import Integer
 from sage.rings.ring import Field
@@ -1307,8 +1307,8 @@ class FunctionField_polymod(FunctionField):
             TypeError: unable to evaluate 'x' in Fraction Field of Univariate
             Polynomial Ring in t over Rational Field
         """
-        from sage.rings.polynomial.polynomial_element import is_Polynomial
-        if polynomial.parent().ngens()>1 or not is_Polynomial(polynomial):
+        from sage.rings.polynomial.polynomial_element import Polynomial
+        if polynomial.parent().ngens()>1 or not isinstance(polynomial, Polynomial):
             raise TypeError("polynomial must be univariate a polynomial")
         if names is None:
             names = (polynomial.variable_name(), )
@@ -3436,7 +3436,7 @@ class FunctionField_global(FunctionField_simple):
             sage: [F.number_of_rational_places(r) for r in [1..10]]
             [4, 8, 4, 16, 44, 56, 116, 288, 508, 968]
         """
-        from sage.rings.all import IntegerRing
+        from sage.rings.integer_ring import IntegerRing
 
         q = self.constant_field().order()
         L = self.L_polynomial()

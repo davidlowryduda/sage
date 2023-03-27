@@ -1,4 +1,9 @@
-<a href="https://sagemath.org"><img src="src/doc/common/themes/sage/static/logo_sagemath_black.svg" height="60" align="right" /></a>
+<a href="https://sagemath.org">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="src/doc/common/static/logo_sagemath_white.svg">
+    <img src="src/doc/common/static/logo_sagemath_black.svg" height="60" align="left">
+  </picture>
+</a>
 
 # Sage: Open Source Mathematical Software
 
@@ -21,12 +26,14 @@ Getting Started
 
 The [Sage Installation Guide](https://doc.sagemath.org/html/en/installation/index.html)
 provides a decision tree that guides you to the type of installation
-that will work best for you.
+that will work best for you. This includes building from source,
+obtaining Sage from a package manager, using a container image, or using
+Sage in the cloud.
 
-If you have already cloned the git repository or downloaded the
+**This README contains self-contained instructions for building Sage from source.**
+It assumes that you have already cloned the git repository or downloaded the
 [sources](https://www.sagemath.org/download-source.html) in the form
-of a tarball, please read the self-contained instructions below on how
-to build Sage and work around common issues.
+of a tarball.
 
 If you have questions or encounter problems, please do not hesitate
 to email the [sage-support mailing list](https://groups.google.com/group/sage-support)
@@ -36,7 +43,7 @@ Supported Platforms
 -------------------
 
 Sage attempts to support all major Linux distributions, recent versions of
-macOS, and Windows (using Windows Subsystem for Linux, Cygwin, or
+macOS, and Windows (using Windows Subsystem for Linux or
 virtualization).
 
 Detailed information on supported platforms for a specific version of Sage
@@ -46,15 +53,6 @@ can be found in the section "Availability and installation help" of the
 We highly appreciate contributions to Sage that fix portability bugs
 and help port Sage to new platforms; let us know at the [sage-devel
 mailing list](https://groups.google.com/group/sage-devel).
-
-Docker Images
--------------
-
-You can also have a look at our Docker images to run Sage.
-To use these images,
-[install Docker](https://www.docker.com/community-edition#/download)
-and follow the instructions on
-[our Docker Hub page](https://hub.docker.com/r/sagemath/sagemath/).
 
 [Windows] Preparing the Platform
 --------------------------------
@@ -66,57 +64,6 @@ your Windows.  Then all instructions for installation in Linux apply.
 
 As an alternative, you can also run Linux on Windows using Docker (see
 above) or other virtualization solutions.
-
-Finally, Sage also works on the 64-bit version of `Cygwin
-<https://cygwin.com/>`_. If you wish to use Cygwin, use the following
-instructions to get started.
-
-1.  Download [cygwin64](https://cygwin.com/install.html) (do not get
-    the 32-bit version; it is not supported by Sage).
-
-2.  Run the `setup-x86_64.exe` graphical installer.  Pick the default
-    options in most cases.  At the package selection screen, use the
-    search bar to find and select at least the following packages:
-    `bzip2`, `coreutils`, `curl`, `gawk`, `gzip`, `tar`, `wget`, `git`.
-
-3.  Start the Cygwin terminal and ensure you get a working bash prompt.
-
-4.  Make sure the path of your Cygwin home directory does not contain
-    space characters.
-
-    By default, your username in Cygwin is the same as your username in
-    Windows.  This might contain spaces and other traditionally
-    non-UNIX-friendly characters, e.g., if it is your full name.  You
-    can check this as follows:
-
-        $ whoami
-        Erik M. Bray
-
-    This means your default home directory on Cygwin contains this
-    username verbatim; in the above example, `/home/Erik M. Bray`.
-    It will save some potential trouble if you change your Cygwin home
-    directory to contain only alphanumeric characters, for example,
-    `/home/embray`.  The easiest way to do this is to first create
-    the home directory you want to use instead, then create an
-    `/etc/passwd` file specifying that directory as your home, as follows:
-
-        $ whocanibe=embray
-        $ mkdir /home/$whocanibe
-        $ mkpasswd.exe -l -u "$(whoami)" | sed -r 's,/home/[^:]+,/home/'$whocanibe, > /etc/passwd
-
-    After this, close all Cygwin terminals (ensure nothing in
-    `C:\cygwin64` is running), then start a new Cygwin terminal and
-    your home directory should have moved.
-
-    There are [other ways to do
-    this](https://stackoverflow.com/questions/1494658/how-can-i-change-my-cygwin-home-folder-after-installation),
-    but the above seems to be the simplest that's still supported.
-
-5.  Install the package manager `apt-cyg`:
-
-        $ curl -OL https://rawgit.com/transcode-open/apt-cyg/master/apt-cyg
-        $ install apt-cyg /usr/local/bin
-        $ rm -f apt-cyg
 
 [macOS] Preparing the Platform
 ------------------------------
@@ -137,7 +84,7 @@ If your Mac uses the Apple Silicon (M1, arm64) architecture:
   https://brew.sh/ required because it provides a version of ``gfortran`` with
   necessary changes for this platform that are not in a released upstream
   version of GCC. (The ``gfortran`` package that comes with the Sage
-  distribution is not suitable for the M1.)
+  distribution is not suitable for the M1/M2.)
 
 If your Mac uses the Intel (x86_64) architecture:
 
@@ -162,7 +109,7 @@ Like many other software packages, Sage is built from source using
 `./configure`, followed by `make`.  However, we strongly recommend to
 read the following step-by-step instructions for building Sage.
 
-The instructions cover all of Linux, macOS, and Cygwin.
+The instructions cover all of Linux, macOS, and WSL.
 
 More details, providing a background for these instructions, can be found
 in the [section "Install from Source Code"](https://doc.sagemath.org/html/en/installation/source.html).
@@ -192,9 +139,6 @@ in the Installation Guide.
       Beware of this convenience when compiling for macOS. Ignoring exact
       capitalization when changing into :envvar:`SAGE_ROOT` can lead to build
       errors for dependencies requiring exact capitalization in path names.
-
-    - [Cygwin] Avoid building in home directories of Windows domain
-      users or in paths with capital letters.
 
 2.  Download/unpack or clone the sources.
 
@@ -236,30 +180,35 @@ in the Installation Guide.
       line endings are used.
 
       Therefore it is crucial that you unpack the source tree from the
-      Cygwin (or WSL) `bash` using the Cygwin (or WSL) `tar` utility
-      and not using other Windows tools (including mingw). Likewise,
-      when using `git`, it is recommended (but not necessary) to use
-      the Cygwin (or WSL) version of `git`.
+      WSL `bash` using the WSL `tar` utility and not using other
+      Windows tools (including mingw). Likewise, when using `git`, it
+      is recommended (but not necessary) to use the WSL version of
+      `git`.
 
-3.  [Linux, Cygwin] Install the required minimal build prerequisites.
+3.  [Linux, WSL] Install the required minimal build prerequisites.
 
-    - Compilers: `gcc`, `gfortran`, `g++` (GCC 6.3 to 12.x and recent
+    - Compilers: `gcc`, `gfortran`, `g++` (GCC 8.x to 12.x and recent
       versions of Clang (LLVM) are supported).
-      See the Installation Manual for a discussion of suitable compilers.
+      See [build/pkgs/gcc/SPKG.rst](build/pkgs/gcc/SPKG.rst) and
+      [build/pkgs/gfortran/SPKG.rst](build/pkgs/gfortran/SPKG.rst)
+      for a discussion of suitable compilers.
 
     - Build tools: GNU `make`, GNU `m4`, `perl` (including
       ``ExtUtils::MakeMaker``), `ranlib`, `git`, `tar`, `bc`.
+      See [build/pkgs/_prereq/SPKG.rst](build/pkgs/_prereq/SPKG.rst) for
+      more details.
 
     - Python 3.4 or later, or Python 2.7, a full installation including
       `urllib`; but ideally version 3.8.x, 3.9.x, or 3.10.x, which
       will avoid having to build Sage's own copy of Python 3.
+      See [build/pkgs/python3/SPKG.rst](build/pkgs/python3/SPKG.rst)
+      for more details.
 
     We have collected lists of system packages that provide these build
     prerequisites. See, in the folder
     [build/pkgs/_prereq/distros](build/pkgs/_prereq/distros),
     the files
     [arch.txt](build/pkgs/_prereq/distros/arch.txt),
-    [cygwin.txt](build/pkgs/_prereq/distros/cygwin.txt),
     [debian.txt](build/pkgs/_prereq/distros/debian.txt)
     (also for Ubuntu, Linux Mint, etc.),
     [fedora.txt](build/pkgs/_prereq/distros/fedora.txt)
@@ -269,8 +218,8 @@ in the Installation Guide.
     [void.txt](build/pkgs/_prereq/distros/void.txt), or visit
     https://doc.sagemath.org/html/en/reference/spkg/_prereq.html#spkg-prereq
 
-4.  [Git] If you plan to work with ticket branches that make changes
-    to packages, install the bootstrapping prerequisites. See the
+4.  [Git] If you plan to do Sage development or otherwise work with ticket branches
+    and not only releases, install the bootstrapping prerequisites. See the
     files in the folder
     [build/pkgs/_bootstrap/distros](build/pkgs/_bootstrap/distros), or
     visit
@@ -284,16 +233,37 @@ in the Installation Guide.
     (If the bootstrapping prerequisites are not installed, this command will
     download a package providing pre-built bootstrap output instead.)
 
-6.  [macOS with homebrew] Set required environment variables for the build:
+6.  Sanitize the build environment. Use the command
 
-        $ source ./.homebrew-build-env
+        $ env
 
-    This is to make some of Homebrew's packages (so-called keg-only packages)
-    available for the build. Run it once to apply the suggestions for the current
-    terminal session. You may need to repeat this command before you rebuild Sage
-    from a new terminal session, or after installing additional homebrew packages.
-    (You can also add it to your shell profile so that it gets run automatically
-    in all future sessions.)
+    to inspect the current environment variables, in particular `PATH`,
+    `PKG_CONFIG_PATH`, `LD_LIBRARY_PATH`, `CFLAGS`, `CPPFLAGS`, `CXXFLAGS`,
+    and `LDFLAGS` (if set).
+
+    Remove items from these (colon-separated) environment variables
+    that Sage should not use for its own build. In particular, remove
+    items if they refer to a previous Sage installation.
+
+    - [WSL] In particular, WSL imports many items from the Windows
+      `PATH` variable into the Linux environment, which can lead to
+      confusing build errors. These items typically start with `/mnt/c`.
+      It is best to remove all of them from the environment variables.
+      For example, you can set `PATH` using the command:
+
+            $ export PATH=/usr/sbin/:/sbin/:/bin/:/usr/lib/wsl/lib/
+
+    - [macOS with homebrew] Set required environment variables for the build:
+
+            $ source ./.homebrew-build-env
+
+      This is to make some of Homebrew's packages (so-called keg-only
+      packages) available for the build. Run it once to apply the
+      suggestions for the current terminal session. You may need to
+      repeat this command before you rebuild Sage from a new terminal
+      session, or after installing additional homebrew packages.  (You
+      can also add it to your shell profile so that it gets run
+      automatically in all future sessions.)
 
 7.  Optionally, decide on the installation prefix (`SAGE_LOCAL`):
 
@@ -303,6 +273,11 @@ in the Installation Guide.
     - This can be changed using `./configure --prefix=SAGE_LOCAL`,
       where `SAGE_LOCAL` is the desired installation prefix, which
       must be writable by the user.
+
+      If you use this option in combination with `--disable-editable`,
+      you can delete the entire Sage source tree after completing
+      the build process.  What is installed in `SAGE_LOCAL` will be
+      a self-contained installation of Sage.
 
     - Note that in Sage's build process, `make` builds **and**
       installs (`make install` is a no-op).  Therefore the
@@ -321,19 +296,7 @@ in the Installation Guide.
 
         $ ./configure --help
 
-    Some notable options for Sage developers are the following:
-
-    - Use `./configure --enable-editable` to configure the Sage distribution
-      to install the Sage library in "develop" ("editable", "in-place") mode
-      instead of using the Sage library's custom incremental build system.
-
-      It has the benefit that to try out changes to Python files, one does not
-      need to run `./sage -b` any more; restarting Sage is enough. It may also
-      have benefits in certain develop environments that get confused by
-      sagelib's custom build system.
-
-      Note that in an editable install, the source directory will be cluttered
-      with build artifacts (but they are `.gitignored`). This is normal.
+    A notable option for Sage developers is the following:
 
     - Use `./configure --enable-download-from-upstream-url` to allow
       downloading packages from their upstream URL if they cannot (yet) be
@@ -371,7 +334,7 @@ in the Installation Guide.
     manager.
 
     For a large [list of Sage
-    packages](https://trac.sagemath.org/ticket/27330), Sage is able to
+    packages](https://github.com/sagemath/sage/issues/27330), Sage is able to
     detect whether an installed system package is suitable for use with
     Sage; in that case, Sage will not build another copy from source.
 
@@ -436,6 +399,20 @@ in the Installation Guide.
     or JupyterLab installation, as described in [section
     "Launching SageMath"](https://doc.sagemath.org/html/en/installation/launching.html)
     in the installation manual.
+    
+Alternative Installation using PyPI
+---------------
+
+For installation of `sage` in python using `pip` you need to install `sagemath-standard`. First, activate your python virtual environment and follow these steps:
+
+            $ python3 -m pip install sage_conf
+            $ ls $(sage-config SAGE_SPKG_WHEELS)
+            $ python3 -m pip install $(sage-config SAGE_SPKG_WHEELS)/*.whl 
+            $ python3 -m pip install sagemath-standard
+
+You need to install `sage_conf`, a wheelhouse of various python packages. You can list the wheels using `ls $(sage-config SAGE_SPKG_WHEELS)`. After manual installation of these wheels, you can install the sage library, `sagemath-standard`. 
+
+**NOTE:** You can find `sage` and `sagemath` pip packages but with these packages, you will encounter `ModuleNotFoundError`.
 
 Troubleshooting
 ---------------
@@ -472,7 +449,7 @@ SAGE_ROOT                 Root directory (sage-x.y in Sage tarball)
 │   └── pkgs              Every package is a subdirectory here
 │       ├── 4ti2/
 │       …
-│       └── zn_poly/
+│       └── zlib/
 ├── configure             Top-level configure script
 ├── COPYING.txt           Copyright information
 ├── pkgs                  Source trees of Python distribution packages
@@ -519,7 +496,7 @@ SAGE_ROOT                 Root directory (sage-x.y in Sage tarball)
 │   └── pkgs              Build logs of individual packages
 │       ├── alabaster-0.7.12.log
 │       …
-│       └── zn_poly-0.9.2.log
+│       └── zlib-1.2.11.log
 ├── m4                    M4 macros for generating the configure script
 │   └── *.m4
 ├── Makefile              Running "make" uses this file
@@ -533,7 +510,7 @@ SAGE_ROOT                 Root directory (sage-x.y in Sage tarball)
 ├── upstream              Source tarballs of packages
 │   ├── Babel-2.9.1.tar.gz
 │   …
-│   └── zn_poly-0.9.2.tar.gz
+│   └── zlib-1.2.11.tar.gz
 ├── venv -> SAGE_VENV     Convenience symlink to the virtual environment
 └── VERSION.txt
 ```

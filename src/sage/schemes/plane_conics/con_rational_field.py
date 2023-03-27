@@ -24,7 +24,9 @@ AUTHORS:
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-from sage.rings.all import (PolynomialRing, ZZ, QQ)
+from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+from sage.rings.integer_ring import ZZ
+from sage.rings.rational_field import QQ
 
 import sage.rings.abc
 
@@ -38,7 +40,8 @@ from .con_number_field import ProjectiveConic_number_field
 
 from sage.structure.element import InfinityElement
 
-from sage.arith.all import lcm, hilbert_symbol
+from sage.arith.functions import lcm
+from sage.arith.misc import hilbert_symbol
 
 
 class ProjectiveConic_rational_field(ProjectiveConic_number_field):
@@ -190,7 +193,7 @@ class ProjectiveConic_rational_field(ProjectiveConic_number_field):
             read_cache=read_cache)
         if point or obstruction:
             from sage.categories.map import Map
-            from sage.categories.all import Rings
+            from sage.categories.rings import Rings
             if isinstance(ret[1], Map) and ret[1].category_for().is_subcategory(Rings()):
                 # ret[1] is a morphism of Rings
                 ret[1] = -1
@@ -222,7 +225,7 @@ class ProjectiveConic_rational_field(ProjectiveConic_number_field):
             True
         """
         from sage.categories.map import Map
-        from sage.categories.all import Rings
+        from sage.categories.rings import Rings
 
         D, T = self.diagonal_matrix()
         abc = [D[j, j] for j in range(3)]

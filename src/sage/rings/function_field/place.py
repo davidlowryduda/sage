@@ -57,7 +57,7 @@ AUTHORS:
 
 from sage.misc.cachefunc import cached_method
 
-from sage.arith.all import lcm
+from sage.arith.functions import lcm
 
 from sage.rings.integer_ring import ZZ
 from sage.rings.qqbar import QQbar
@@ -941,7 +941,7 @@ class FunctionFieldPlace_polymod(FunctionFieldPlace):
 
         def to_V(e):
             """
-            An example to show the idea: Suppose that
+            An example to show the idea: Suppose that::
 
                     [x 0 0]
                 M = [0 1 0] and v = (x^10, x^7 + x^3, x^7 + x^4 + x^3 + 1)

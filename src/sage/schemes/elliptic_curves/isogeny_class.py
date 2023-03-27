@@ -97,7 +97,7 @@ class IsogenyClass_EC(SageObject):
 
     def __getitem__(self, i):
         """
-        Return the `i`th curve in the class.
+        Return the `i`-th curve in the class.
 
         EXAMPLES::
 
@@ -403,10 +403,10 @@ class IsogenyClass_EC(SageObject):
         from sage.graphs.graph import Graph
 
         if not self.E.base_field() is QQ:
-            M = self.matrix(fill = False)
+            M = self.matrix(fill=False)
             n = len(self)
             G = Graph(M, format='weighted_adjacency_matrix')
-            D = dict([(v,self.curves[v]) for v in G.vertices()])
+            D = dict([(v,self.curves[v]) for v in G.vertices(sort=False)])
             G.set_vertices(D)
             if self._qfmat: # i.e. self.E.has_rational_cm():
                 for i in range(n):
@@ -416,12 +416,11 @@ class IsogenyClass_EC(SageObject):
             G.relabel(list(range(1, n + 1)))
             return G
 
-
-        M = self.matrix(fill = False)
+        M = self.matrix(fill=False)
         n = M.nrows() # = M.ncols()
         G = Graph(M, format='weighted_adjacency_matrix')
-        N = self.matrix(fill = True)
-        D = dict([(v,self.curves[v]) for v in G.vertices()])
+        N = self.matrix(fill=True)
+        D = dict([(v,self.curves[v]) for v in G.vertices(sort=False)])
         # The maximum degree classifies the shape of the isogeny
         # graph, though the number of vertices is often enough.
         # This only holds over Q, so this code will need to change
@@ -535,7 +534,8 @@ class IsogenyClass_EC(SageObject):
             return self
         if isinstance(order, str):
             if order == "lmfdb":
-                reordered_curves = sorted(self.curves, key = lambda E: E.a_invariants())
+                reordered_curves = sorted(self.curves,
+                                          key=lambda E: E.a_invariants())
             else:
                 reordered_curves = list(self.E.isogeny_class(algorithm=order))
         elif isinstance(order, (list, tuple, IsogenyClass_EC)):
@@ -770,7 +770,7 @@ class IsogenyClass_EC_NumberField(IsogenyClass_EC):
             True
         """
         from sage.schemes.elliptic_curves.ell_curve_isogeny import fill_isogeny_matrix
-        from sage.matrix.all import MatrixSpace
+        from sage.matrix.matrix_space import MatrixSpace
         from sage.sets.set import Set
         self._maps = None
 
@@ -1055,7 +1055,7 @@ class IsogenyClass_EC_Rational(IsogenyClass_EC_NumberField):
             [0 2 0 0 0 0]
         """
         algorithm = self._algorithm
-        from sage.matrix.all import MatrixSpace
+        from sage.matrix.matrix_space import MatrixSpace
         self._maps = None
         if algorithm == "database":
             try:
@@ -1068,7 +1068,8 @@ class IsogenyClass_EC_Rational(IsogenyClass_EC_NumberField):
                 raise RuntimeError("unable to find %s in the database" % self.E)
             # All curves will have the same conductor and isogeny class,
             # and there are most 8 of them, so lexicographic sorting is okay.
-            self.curves = tuple(sorted(curves, key = lambda E: E.cremona_label()))
+            self.curves = tuple(sorted(curves,
+                                       key=lambda E: E.cremona_label()))
             self._mat = None
         elif algorithm == "sage":
             curves = [self.E.minimal_model()]
@@ -1182,8 +1183,8 @@ def isogeny_degrees_cm(E, verbose=False):
         print("CM case, discriminant = %s" % d)
 
     from sage.libs.pari.all import pari
-    from sage.sets.all import Set
-    from sage.arith.all import kronecker_symbol
+    from sage.sets.set import Set
+    from sage.arith.misc import kronecker as kronecker_symbol
 
     n = E.base_field().absolute_degree()
     if not E.has_rational_cm():
@@ -1206,7 +1207,7 @@ def isogeny_degrees_cm(E, verbose=False):
     # Collect possible primes.  First put in 2, and also 3 for
     # discriminant -3 (special case because of units):
 
-    L = Set([ZZ(2), ZZ(3)]) if d==-3 else  Set([ZZ(2)])
+    L = Set([ZZ(2), ZZ(3)]) if d==-3 else Set([ZZ(2)])
     if verbose:
         print("initial primes: %s" % L)
 

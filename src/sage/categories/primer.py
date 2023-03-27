@@ -1,8 +1,9 @@
 r"""
-Elements, parents, and categories in Sage: a (draft of) primer
+Elements, parents, and categories in Sage: a primer
 
 .. contents::
-    :depth: 2
+   :depth: 2
+   :class: this-will-duplicate-information-and-it-is-still-useful-here
 
 Abstract
 ========
@@ -80,8 +81,8 @@ Some challenges
       sage: GL(2,2).cardinality()
       6
 
-      sage: A=random_matrix(ZZ,6,3,x=7)
-      sage: L=LatticePolytope(A.rows())
+      sage: A = random_matrix(ZZ,6,3,x=7)
+      sage: L = LatticePolytope(A.rows())
       sage: L.npoints()                # oops!   # random
       37
 
@@ -97,7 +98,7 @@ Some challenges
 
   ::
 
-      sage: m=random_matrix(QQ, 4, algorithm='echelonizable', rank=3, upper_bound=60)
+      sage: m = random_matrix(QQ, 4, algorithm='echelonizable', rank=3, upper_bound=60)
       sage: m^8 == m*m*m*m*m*m*m*m == ((m^2)^2)^2
       True
 
@@ -439,12 +440,12 @@ done by introspection::
 For plain Python methods, one can also just ask in which module they
 are implemented::
 
-    sage: i._pow_.__module__  # not tested (Trac #24275)
+    sage: i._pow_.__module__  # not tested (Issue #24275)
     'sage.categories.semigroups'
 
     sage: pQ._mul_.__module__
     'sage.rings.polynomial.polynomial_element_generic'
-    sage: pQ._pow_.__module__  # not tested (Trac #24275)
+    sage: pQ._pow_.__module__  # not tested (Issue #24275)
     'sage.categories.semigroups'
 
 We see that integers and polynomials have each their own

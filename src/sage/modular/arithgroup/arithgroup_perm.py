@@ -98,14 +98,18 @@ AUTHORS:
 #
 ################################################################################
 
+from sage.arith.functions import lcm
+from sage.arith.misc import CRT_basis
+from sage.groups.perm_gps.constructor import PermutationGroupElement as PermutationConstructor
+from sage.groups.perm_gps.permgroup import PermutationGroup
+from sage.groups.perm_gps.permgroup_element import PermutationGroupElement
+from sage.misc.cachefunc import cached_method
+from sage.misc.misc_c import prod
+from sage.rings.integer_ring import ZZ
+
 from .all import SL2Z
 from .arithgroup_generic import ArithmeticSubgroup
-from sage.rings.integer_ring import ZZ
-from sage.misc.cachefunc import cached_method
-import sage.arith.all as arith
 
-from sage.groups.perm_gps.permgroup_element import PermutationGroupElement
-from sage.groups.perm_gps.constructor import PermutationGroupElement as PermutationConstructor
 
 Idm = SL2Z([1,0,0,1])    # identity
 
@@ -143,9 +147,9 @@ def sl2z_word_problem(A):
         True
     """
     A = SL2Z(A)
-    output=[]
+    output = []
 
-    ## If A00 is zero
+    # If A00 is zero
     if A[0,0]==0:
         c=A[1,1]
         if c != 1:
@@ -163,20 +167,20 @@ def sl2z_word_problem(A):
         n=(-A[0,1]/A[0,0]).ceil()  #n s.t. 0 <= A[0,1]+n*A[0,0] < A[0,0]
         A=A*Lm**n
         output.append((0, -n))
-   ## At this point A00>0 and A01>=0
+    # At this point A00>0 and A01>=0
     while not (A[0,0]==0 or A[0,1]==0):
         if A[0,0]>A[0,1]:
             n=(A[0,0]/A[0,1]).floor()
             A=A*SL2Z([1,0,-n,1])
             output.append((1, n))
 
-        else:      #A[0,0]<=A[0,1]
+        else:      # A[0,0]<=A[0,1]
             n=(A[0,1]/A[0,0]).floor()
             A=A*SL2Z([1,-n,0,1])
             output.append((0, n))
 
     if A==SL2Z(1):
-        pass       #done, so don't add R^0
+        pass       # done, so don't add R^0
     elif A[0,0]==0:
         c=A[1,1]
         if c != 1:
@@ -206,8 +210,7 @@ def eval_sl2z_word(w):
         [ 66 -59]
         [ 47 -42]
     """
-    from sage.all import prod
-    mat = [Lm,Rm]
+    mat = [Lm, Rm]
     w0 = Idm
     w1 = w
     return w0 * prod((mat[a[0]]**a[1] for a in w1), Idm)
@@ -243,7 +246,6 @@ def word_of_perms(w, p1, p2):
             G = G2
             p1 = G(p1)
         else:
-            from sage.groups.perm_gps.all import PermutationGroup
             G = PermutationGroup([p1,p2])
             p1 = G(p1)
             p2 = G(p2)
@@ -431,8 +433,6 @@ def ArithmeticSubgroup_Permutation(
 
         # Check transitivity. This is the most expensive check, so we do it
         # last.
-        from sage.groups.perm_gps.all import PermutationGroup
-
         G = PermutationGroup(gens)
         if not G.is_transitive():
             raise ValueError("Permutations do not generate a transitive group")
@@ -676,7 +676,6 @@ class ArithmeticSubgroup_Permutation_class(ArithmeticSubgroup):
             sage: ap.HsuExample10().perm_group()
             Permutation Group with generators [(1,2)(3,4)(5,6)(7,8)(9,10), (1,8,3)(2,4,6)(5,7,10), (1,4)(2,5,9,10,8)(3,7,6), (1,7,9,10,6)(2,3)(4,5,8)]
         """
-        from sage.groups.perm_gps.all import PermutationGroup
         # we set canonicalize to False as otherwise PermutationGroup changes the
         # order of the generators.
         return PermutationGroup([self.S2(), self.S3(), self.L(), self.R()], canonicalize=False)
@@ -1217,11 +1216,10 @@ class ArithmeticSubgroup_Permutation_class(ArithmeticSubgroup):
             Looped multi-digraph on 2 vertices
         """
         from sage.graphs.digraph import DiGraph
-        res = DiGraph(multiedges=True,loops=True)
+        res = DiGraph(multiedges=True, loops=True)
         res.add_vertices(list(range(self.index())))
 
-
-        if right_cosets: # invert the permutations
+        if right_cosets:  # invert the permutations
             S2 = [None]*self.index()
             S3 = [None]*self.index()
             L = [None]*self.index()
@@ -1288,7 +1286,7 @@ class ArithmeticSubgroup_Permutation_class(ArithmeticSubgroup):
             sage: G.generalised_level()
             3
         """
-        return arith.lcm(self.cusp_widths())
+        return lcm(self.cusp_widths())
 
     def congruence_closure(self):
         r"""
@@ -1477,7 +1475,7 @@ class ArithmeticSubgroup_Permutation_class(ArithmeticSubgroup):
             # e>1, m>1
             onehalf = ZZ(2).inverse_mod(m) # i.e. 2^(-1) mod m
             onefifth = ZZ(5).inverse_mod(e) # i.e. 5^(-1) mod e
-            c,d = arith.CRT_basis([m, e])
+            c, d = CRT_basis([m, e])
             # c=0 mod e, c=1 mod m; d=1 mod e, d=0 mod m
             a = L**c
             b = R**c
@@ -2049,7 +2047,7 @@ class EvenArithmeticSubgroup_Permutation(ArithmeticSubgroup_Permutation_class):
             s3,s3
             s3,s3,s2
 
-            sage: edges = G.coset_graph().edges(); edges
+            sage: edges = G.coset_graph().edges(sort=True); edges
             [(0, 1, 's2'), (0, 1, 's3'), (1, 0, 's2'), (1, 2, 's3'), (2, 0, 's3'), (2, 3, 's2'), (3, 2, 's2'), (3, 3, 's3')]
             sage: len(gens)
             2

@@ -224,7 +224,7 @@ class OrderedTree(AbstractClonableTree, ClonableList,
 
         .. NOTE::
 
-            It is possible to bypass the automatic parent mechanism using:
+            It is possible to bypass the automatic parent mechanism using::
 
                 sage: t1 = OrderedTree.__new__(OrderedTree, Parent(), [])
                 sage: t1.__init__(Parent(), [])
@@ -1013,6 +1013,7 @@ class OrderedTrees_size(OrderedTrees):
         sage: S.list()
         [[[], []], [[[]]]]
     """
+
     def __init__(self, size):
         """
         TESTS::
@@ -1021,7 +1022,7 @@ class OrderedTrees_size(OrderedTrees):
             sage: TestSuite(OrderedTrees_size(0)).run()
             sage: for i in range(6): TestSuite(OrderedTrees_size(i)).run()
         """
-        super(OrderedTrees_size, self).__init__(category=FiniteEnumeratedSets())
+        super().__init__(category=FiniteEnumeratedSets())
         self._size = size
 
     def _repr_(self):
@@ -1348,6 +1349,7 @@ class LabelledOrderedTrees(UniqueRepresentation, Parent):
         sage: y.parent() is LOT
         True
     """
+
     def __init__(self, category=None):
         """
         TESTS::

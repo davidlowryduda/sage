@@ -38,7 +38,7 @@ such that the coefficient corresponding to a word `w\in A^*` equals
         doctest:...: FutureWarning: This class/method/function is
         marked as experimental. It, its functionality or its interface
         might change without a formal deprecation.
-        See http://trac.sagemath.org/21202 for details.
+        See https://github.com/sagemath/sage/issues/21202 for details.
 
 
 Various
@@ -901,8 +901,6 @@ class RecognizableSeries(ModuleElement):
                 return False
         return True
 
-
-
     def __hash__(self):
         r"""
         A hash value of this recognizable series.
@@ -1068,6 +1066,12 @@ class RecognizableSeries(ModuleElement):
         This method implements the minimization algorithm presented in
         Chapter 2 of [BR2010a]_.
 
+        .. NOTE::
+
+            Due to the algorithm, the left vector of the result
+            is always `(1, 0, \ldots, 0)`, i.e., the first vector of the
+            standard basis.
+
         EXAMPLES::
 
             sage: from itertools import islice
@@ -1084,6 +1088,8 @@ class RecognizableSeries(ModuleElement):
             [3 0]  [ 0  1]
             [6 1], [-6  5], (1, 0), (0, 1)
             )
+            sage: M.left == vector([1, 0])
+            True
             sage: all(c == d and v == w
             ....:     for (c, v), (d, w) in islice(zip(iter(S), iter(M)), 20))
             True
@@ -1681,7 +1687,7 @@ class RecognizableSeriesSpace(UniqueRepresentation, Parent):
 
         return (coefficient_ring, indices, category, minimize_results)
 
-    @experimental(trac_number=21202)
+    @experimental(issue_number=21202)
     def __init__(self, coefficient_ring, indices, category, minimize_results):
         r"""
         See :class:`RecognizableSeriesSpace` for details.
@@ -1753,7 +1759,6 @@ class RecognizableSeriesSpace(UniqueRepresentation, Parent):
         """
         return _pickle_RecognizableSeriesSpace, \
             (self.coefficient_ring(), self.indices(), self.category())
-
 
     def alphabet(self):
         r"""

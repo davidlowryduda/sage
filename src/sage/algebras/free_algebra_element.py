@@ -92,7 +92,7 @@ class FreeAlgebraElement(IndexedFreeModuleElement, AlgebraElement):
             sage: repr(-x+3*y*z)    # indirect doctest
             '-x + 3*y*z'
 
-        Trac ticket :trac:`11068` enables the use of local variable names::
+        Github issue :trac:`11068` enables the use of local variable names::
 
             sage: from sage.structure.parent_gens import localvars
             sage: with localvars(A, ['a','b','c']):
@@ -224,11 +224,11 @@ class FreeAlgebraElement(IndexedFreeModuleElement, AlgebraElement):
             if self_on_left:
                 return Factorization([(self, 1)]) * scalar
             return scalar * Factorization([(self, 1)])
-        return super(FreeAlgebraElement, self)._acted_upon_(scalar, self_on_left)
+        return super()._acted_upon_(scalar, self_on_left)
 
     # For backward compatibility
-    #_lmul_ = _acted_upon_
-    #_rmul_ = _acted_upon_
+    # _lmul_ = _acted_upon_
+    # _rmul_ = _acted_upon_
 
     def variables(self):
         """

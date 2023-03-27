@@ -61,6 +61,7 @@ class AbstractSetPartition(ClonableArray,
     r"""
     Methods of set partitions which are independent of the base set
     """
+
     def _repr_(self):
         """
         Return a string representation of ``self``.
@@ -2663,6 +2664,7 @@ class SetPartitions_all(SetPartitions):
     r"""
     All set partitions.
     """
+
     def __init__(self):
         """
         Initialize ``self``.
@@ -2735,7 +2737,7 @@ class SetPartitions_set(SetPartitions):
             sage: S1 is S2, S1 is S3
             (True, True)
         """
-        return super(SetPartitions_set, cls).__classcall__(cls, frozenset(s))
+        return super().__classcall__(cls, frozenset(s))
 
     def __init__(self, s):
         """
@@ -2914,13 +2916,13 @@ class SetPartitions_setparts(SetPartitions_set):
         """
         if isinstance(s, (int, Integer)):
             s = list(range(1, s + 1))
-        return super(SetPartitions_setparts, cls).__classcall__(cls, frozenset(s), Partition(parts))
+        return super().__classcall__(cls, frozenset(s), Partition(parts))
 
     def __init__(self, s, parts):
         """
         Initialize the data structure.
 
-        We can assume here that `parts` is a :cls:`Partition`.
+        We can assume here that ``parts`` is a :class:`Partition`.
 
         TESTS::
 
@@ -2948,7 +2950,7 @@ class SetPartitions_setparts(SetPartitions_set):
 
             sage: SetPartitions(5, [2,2,1]).parts
             doctest:...: DeprecationWarning: The attribute parts for the partition of block sizes is deprecated, use the method shape instead.
-            See https://trac.sagemath.org/25865 for details.
+            See https://github.com/sagemath/sage/issues/25865 for details.
             [2, 2, 1]
         """
         from sage.misc.superseded import deprecation
@@ -3112,7 +3114,6 @@ class SetPartitions_setparts(SetPartitions_set):
             return False
         return sorted(map(len, x), reverse=True) == self._parts
 
-
     def random_element(self):
         r"""
         Return a random set partition of ``self``.
@@ -3170,7 +3171,7 @@ class SetPartitions_setn(SetPartitions_set):
             sage: S1 is S2, S1 is S3
             (True, True)
         """
-        return super(SetPartitions_setn, cls).__classcall__(cls, frozenset(s), k)
+        return super().__classcall__(cls, frozenset(s), k)
 
     def __init__(self, s, k):
         """
@@ -3200,7 +3201,7 @@ class SetPartitions_setn(SetPartitions_set):
 
             sage: SetPartitions(5, 3).n
             doctest:...: DeprecationWarning: The attribute n for the number of blocks is deprecated, use the method number_of_blocks instead.
-            See https://trac.sagemath.org/25462 for details.
+            See https://github.com/sagemath/sage/issues/25462 for details.
             3
         """
         from sage.misc.superseded import deprecation

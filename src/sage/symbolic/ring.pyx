@@ -214,12 +214,10 @@ cdef class SymbolicRing(sage.rings.abc.SymbolicRing):
             from sage.rings.polynomial.polynomial_ring import is_PolynomialRing
             from sage.rings.polynomial.multi_polynomial_ring import is_MPolynomialRing
             from sage.rings.polynomial.laurent_polynomial_ring import is_LaurentPolynomialRing
-
-            from sage.rings.all import (ComplexField,
-                                        RLF, CLF,
-                                        InfinityRing,
-                                        UnsignedInfinityRing)
-            from sage.rings.finite_rings.finite_field_base import is_FiniteField
+            from sage.rings.complex_mpfr import ComplexField
+            from sage.rings.infinity import InfinityRing, UnsignedInfinityRing
+            from sage.rings.real_lazy import RLF, CLF
+            from sage.rings.finite_rings.finite_field_base import FiniteField
 
             from sage.interfaces.maxima import Maxima
 
@@ -236,8 +234,8 @@ cdef class SymbolicRing(sage.rings.abc.SymbolicRing):
                                     sage.rings.abc.ComplexIntervalField,
                                     sage.rings.abc.RealBallField,
                                     sage.rings.abc.ComplexBallField,
-                                    sage.rings.abc.IntegerModRing))
-                  or is_FiniteField(R)):
+                                    sage.rings.abc.IntegerModRing,
+                                    FiniteField))):
                 return True
             elif isinstance(R, GenericSymbolicSubring):
                 return True
@@ -257,7 +255,7 @@ cdef class SymbolicRing(sage.rings.abc.SymbolicRing):
             sage: K.<a> = QuadraticField(-3)
             sage: a + sin(x)
             I*sqrt(3) + sin(x)
-            sage: x=var('x'); y0,y1=PolynomialRing(ZZ,2,'y').gens()
+            sage: x = var('x'); y0,y1 = PolynomialRing(ZZ,2,'y').gens()
             sage: x+y0/y1
             x + y0/y1
             sage: x.subs(x=y0/y1)
@@ -1142,7 +1140,7 @@ cdef class SymbolicRing(sage.rings.abc.SymbolicRing):
             :doc:`subring`
         """
         if self is not SR:
-            raise NotImplementedError('Cannot create subring of %s.' % (self,))
+            raise NotImplementedError('cannot create subring of %s' % (self,))
         from .subring import SymbolicSubring
         return SymbolicSubring(*args, **kwds)
 
@@ -1225,7 +1223,7 @@ cdef class NumpyToSRMorphism(Morphism):
             from sage.rings.real_double import RDF
             self._intermediate_ring = RDF
         elif issubclass(numpy_type, numpy.complexfloating):
-            from sage.rings.all import CDF
+            from sage.rings.complex_double import CDF
             self._intermediate_ring = CDF
         else:
             raise TypeError("{} is not a numpy number type".format(numpy_type))
@@ -1327,7 +1325,7 @@ def is_SymbolicExpressionRing(R):
         doctest:warning...
         DeprecationWarning: is_SymbolicExpressionRing is deprecated;
         use "... is SR" or isinstance(..., sage.rings.abc.SymbolicRing instead
-        See https://trac.sagemath.org/32665 for details.
+        See https://github.com/sagemath/sage/issues/32665 for details.
         False
         sage: is_SymbolicExpressionRing(SR)
         True

@@ -1,5 +1,5 @@
 """
-Contour Plots
+Contour plots
 """
 # ****************************************************************************
 #       Copyright (C) 2006 Alex Clemesha <clemesha@gmail.com>,
@@ -822,7 +822,7 @@ def contour_plot(f, xrange, yrange, **options):
         g = contour_plot(f, (-pi,pi), (-pi,pi), fill=False, axes=True)
         sphinx_plot(g)
 
-    If you are plotting a sole countour and if all of your data lie on
+    If you are plotting a sole contour and if all of your data lie on
     one side of it, then (as part of :trac:`21042`) a heuristic may be
     used to improve the result; in that case, a warning is emitted::
 
@@ -848,9 +848,7 @@ def contour_plot(f, xrange, yrange, **options):
 
         sage: contour_plot(lambda x,y: 0, (-1,1), (-1,1),
         ....:              contours=[0], fill=False, cmap=['blue'])
-        ...
-        UserWarning: No contour levels were found within the data range.
-        Graphics object consisting of 1 graphics primitive
+        ...Graphics object consisting of 1 graphics primitive
 
     .. PLOT::
 
@@ -874,8 +872,7 @@ def contour_plot(f, xrange, yrange, **options):
     Check that :trac:`18074` is fixed::
 
         sage: contour_plot(0, (0,1), (0,1))
-        ... UserWarning: No contour levels were found within the data range.
-        Graphics object consisting of 1 graphics primitive
+        ...Graphics object consisting of 1 graphics primitive
 
     Domain points in :trac:`11648` with complex output are now skipped::
 

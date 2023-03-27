@@ -185,7 +185,7 @@ class SymmetricFunctionAlgebra_schur(classical.SymmetricFunctionAlgebra_classica
         try:
             return self.skew_schur(x)
         except ValueError:
-            return super(SymmetricFunctionAlgebra_schur, self)._element_constructor_(x)
+            return super()._element_constructor_(x)
 
     def _repeated_bernstein_creation_operator_on_basis(self, la, nu):
         r"""
@@ -718,7 +718,6 @@ class SymmetricFunctionAlgebra_schur(classical.SymmetricFunctionAlgebra_classica
                         return (power * quotient.subs({q_lim: q}))
 
             return self.parent()._apply_module_morphism(self, f, q.parent())
-
 
         def exponential_specialization(self, t=None, q=1):
             r"""

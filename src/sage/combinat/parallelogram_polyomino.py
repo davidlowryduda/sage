@@ -104,6 +104,7 @@ class LocalOptions:
     sage.structure.global_options.py. We should split global_option in two
     classes LocalOptions and GlobalOptions.
     """
+
     def __init__(self, name='', **options):
         r"""
         Construct a new LocalOptions.
@@ -425,10 +426,9 @@ class LocalOptions:
         specifications for the options and then to add the options to the
         class.
 
-        The _dispatch method will then call:
-
-            obj.``<option name> + '_' + <current value of option>``(
-                *get_values, **set_values)
+        The ``_dispatch`` method will then call the method named
+        ``<option name> + '_' + <current value of option>`` of ``obj``
+        with arguments ``*get_values, **set_values``.
 
         Note that the argument ``self`` is necessary here because the
         dispatcher is a method of the options class and not of ``self``.
@@ -455,6 +455,7 @@ class LocalOptions:
             dispatch_to = dispatch_to[:-1]
         f = getattr(obj, dispatch_to + "_" + str(self._options[option]))
         return f(*get_values, **set_values)
+
 
 default_tikz_options = dict(
     scale=1, line_size=1, point_size=3.5, color_line='black',
@@ -596,6 +597,7 @@ class _drawing_tool:
         (1.000000, -1.000000);'
 
     """
+
     def __init__(self, options, XY=lambda v: v):
         r"""
         Construct a drawing tools to produce some TIKZ drawing.
@@ -1637,6 +1639,7 @@ class ParallelogramPolyomino(ClonableList,
             the binary tree and the virtual root.
 
             The edges are defined as follow:
+
             - if v1 is a left (resp. right) son of v2 and v2 is a right
               (resp. left) son of v3, then, in the ordered tree, v2 is the
               father of v1;
@@ -1659,6 +1662,7 @@ class ParallelogramPolyomino(ClonableList,
                       5
                        \
                         6
+
             becomes
 
             ::
@@ -2307,6 +2311,7 @@ class ParallelogramPolyomino(ClonableList,
             sage: row
             [0, 1, 1]
         """
+
         def __init__(self, polyomino, row):
             r"""
             The constructor of the class
@@ -3996,6 +4001,7 @@ class ParallelogramPolyominoesFactory(SetFactory):
         sage: PPS.cardinality()
         +Infinity
     """
+
     def __call__(self, size=None, policy=None):
         r"""
         Return a family of parallelogram polyominoes enumerated with the
@@ -4096,6 +4102,7 @@ class ParallelogramPolyominoes_size(
          [[0, 1, 0, 1], [1, 1, 0, 0]],
          [[0, 1, 1, 1], [1, 1, 1, 0]]]
     """
+
     def __init__(self, size, policy):
         r"""
         Construct a set of Parallelogram Polyominoes of a given size.
@@ -4264,6 +4271,7 @@ class ParallelogramPolyominoes_all(
         sage: PPS
         Parallelogram polyominoes
     """
+
     def __init__(self, policy):
         r"""
         Construct the set of all parallelogram polyominoes.

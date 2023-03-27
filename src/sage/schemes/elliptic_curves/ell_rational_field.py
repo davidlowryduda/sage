@@ -52,15 +52,15 @@ AUTHORS:
 
 from . import constructor
 from . import BSD
-from   .ell_generic import is_EllipticCurve
+from .ell_generic import is_EllipticCurve
 from . import ell_modular_symbols
-from   .ell_number_field import EllipticCurve_number_field
+from .ell_number_field import EllipticCurve_number_field
 from . import ell_point
 from . import ell_tate_curve
 from . import ell_torsion
 from . import heegner
 from . import mod5family
-from   .modular_parametrization import ModularParameterization
+from .modular_parametrization import ModularParameterization
 from . import padics
 
 from sage.modular.modsym.modsym import ModularSymbols
@@ -74,13 +74,14 @@ import sage.databases.cremona
 
 import sage.arith.all as arith
 import sage.rings.all as rings
-from sage.rings.all import (
-    PowerSeriesRing,
-    infinity as oo,
-    ZZ, QQ,
-    Integer,
-    IntegerRing, RealField,
-    ComplexField, RationalField)
+from sage.rings.power_series_ring import PowerSeriesRing
+from sage.rings.infinity import Infinity as oo
+from sage.rings.integer_ring import ZZ, IntegerRing
+from sage.rings.rational_field import QQ
+from sage.rings.integer import Integer
+from sage.rings.real_mpfr import RealField
+from sage.rings.complex_mpfr import ComplexField
+from sage.rings.rational_field import RationalField
 
 from sage.structure.coerce import py_scalar_to_element
 from sage.structure.element import Element
@@ -1095,7 +1096,7 @@ class EllipticCurve_rational_field(EllipticCurve_number_field):
             raise ValueError("Implementation should be one of 'sage', 'num' or 'eclib'")
         return (sign, normalize, implementation, nap)
 
-    @cached_method(key = _modular_symbol_normalize)
+    @cached_method(key=_modular_symbol_normalize)
     def modular_symbol(self, sign=+1, normalize=None, implementation='eclib', nap=0):
         r"""
         Return the modular symbol map associated to this elliptic curve
@@ -1827,7 +1828,7 @@ class EllipticCurve_rational_field(EllipticCurve_number_field):
             sage: E = EllipticCurve('389a1')
             sage: E._known_points = []  # clear cached points
             sage: E.simon_two_descent()
-            (2, 2, [(1 : 0 : 1), (-11/9 : 28/27 : 1)])
+            (2, 2, [(5/4 : 5/8 : 1), (-3/4 : 7/8 : 1)])
             sage: E = EllipticCurve('5077a1')
             sage: E.simon_two_descent()
             (3, 3, [(1 : 0 : 1), (2 : 0 : 1), (0 : 2 : 1)])
@@ -1964,7 +1965,7 @@ class EllipticCurve_rational_field(EllipticCurve_number_field):
         """
         from sage.interfaces.magma import magma
         E = magma(self)
-        return Integer(E.ThreeSelmerGroup(MethodForFinalStep = magma('"%s"'%algorithm)).Ngens())
+        return Integer(E.ThreeSelmerGroup(MethodForFinalStep=magma('"%s"' % algorithm)).Ngens())
 
     def rank(self, use_database=True, verbose=False,
              only_use_mwrank=True,
@@ -2301,8 +2302,8 @@ class EllipticCurve_rational_field(EllipticCurve_number_field):
         if not only_use_mwrank:
             try:
                 verbose_verbose("Trying to compute rank.")
-                r = self.rank(only_use_mwrank = False)
-                verbose_verbose("Got r = %s."%r)
+                r = self.rank(only_use_mwrank=False)
+                verbose_verbose("Got r = %s." % r)
                 if r == 0:
                     verbose_verbose("Rank = 0, so done.")
                     return [], True
@@ -2438,7 +2439,7 @@ class EllipticCurve_rational_field(EllipticCurve_number_field):
             Generator 1 is [29604565304828237474403861024284371796799791624792913256602210:-256256267988926809388776834045513089648669153204356603464786949:490078023219787588959802933995928925096061616470779979261000]; height 95.98037...
             Regulator = 95.980...
         """
-        return len(self.gens(proof = proof))
+        return len(self.gens(proof=proof))
 
     def regulator(self, proof=None, precision=53, **kwds):
         r"""
@@ -2646,7 +2647,7 @@ class EllipticCurve_rational_field(EllipticCurve_number_field):
         from sage.libs.eclib.all import mwrank_MordellWeil
         mw = mwrank_MordellWeil(c, verbose)
         mw.process(v) # by default, this does no saturation yet
-        ok, index, unsat = mw.saturate(max_prime=max_prime, min_prime = min_prime)
+        ok, index, unsat = mw.saturate(max_prime=max_prime, min_prime=min_prime)
         if not ok:
             print("Failed to saturate failed at the primes {}".format(unsat))
         sat = [Emin(P) for P in mw.points()]
@@ -3436,7 +3437,7 @@ class EllipticCurve_rational_field(EllipticCurve_number_field):
             sage: E.Lambda(1.4+0.5*I, 50)
             -0.354172680517... + 0.874518681720...*I
         """
-        from sage.all import pi
+        from sage.symbolic.constants import pi
 
         s = C(s)
         N = self.conductor()
@@ -3567,7 +3568,7 @@ class EllipticCurve_rational_field(EllipticCurve_number_field):
         - ``M`` -- non-negative integer; this function is only ever called on
           `M > 1`, although the algorithm works fine for the case `M = 1`
 
-        - ``invariant`` -- string (default: "both"``); options are:
+        - ``invariant`` -- string (default: ``"both"``); options are:
 
           - "both" -- both modular degree and congruence number at level `MN` are computed
 
@@ -4791,7 +4792,7 @@ class EllipticCurve_rational_field(EllipticCurve_number_field):
         if not proof:
             return True
         else:
-            return  E2 in E1.isogeny_class().curves
+            return E2 in E1.isogeny_class().curves
 
     def isogeny_degree(self, other):
         """
@@ -5132,7 +5133,7 @@ class EllipticCurve_rational_field(EllipticCurve_number_field):
         # Take logs here since shortest path minimizes the *sum* of the weights -- not the product.
         M = M.parent()([a.log() if a else 0 for a in M.list()])
         G = Graph(M, format='weighted_adjacency_matrix')
-        G.set_vertices(dict([(v,isocls[v]) for v in G.vertices()]))
+        G.set_vertices(dict([(v,isocls[v]) for v in G.vertices(sort=False)]))
         v = G.shortest_path_lengths(0, by_weight=True)
         # Now exponentiate and round to get degrees of isogenies
         v = dict([(i, j.exp().round() if j else 0) for i,j in v.items()])
@@ -6013,7 +6014,7 @@ class EllipticCurve_rational_field(EllipticCurve_number_field):
             roots.remove(e3)
             e1,e2 = roots
 
-        from sage.all import pi
+        from sage.symbolic.constants import pi
         e = R(1).exp()
         pi = R(pi)
 
@@ -6417,10 +6418,12 @@ class EllipticCurve_rational_field(EllipticCurve_number_field):
             Return the set of S-integers x which are x-coordinates of
             points on the curve which are linear combinations of the
             generators (basis and torsion points) with coefficients
-            bounded by `H_q`.  The bound `H_q` will be computed at
-            runtime.
+            bounded by `H_q`.
+
+            The bound `H_q` will be computed at runtime.
+
             (Modified version of integral_points_with_bounded_mw_coeffs() in
-             integral_points() )
+            integral_points())
 
             .. TODO::
 
@@ -6628,7 +6631,7 @@ class EllipticCurve_rational_field(EllipticCurve_number_field):
         M = U.transpose()*M*U
 
         # NB "lambda" is a reserved word in Python!
-        lamda = min(M.charpoly(algorithm="hessenberg").roots(multiplicities = False))
+        lamda = min(M.charpoly(algorithm="hessenberg").roots(multiplicities=False))
         max_S = max(S)
         len_S += 1 #Counting infinity (always "included" in S)
         if verbose:
@@ -7052,7 +7055,7 @@ def elliptic_curve_congruence_graph(curves):
         Graph on 12 vertices
     """
     from sage.graphs.graph import Graph
-    from sage.arith.all import lcm
+    from sage.arith.functions import lcm
     from sage.rings.fast_arith import prime_range
     from sage.misc.misc_c import prod
     G = Graph()

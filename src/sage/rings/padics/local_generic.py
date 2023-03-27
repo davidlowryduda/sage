@@ -196,7 +196,7 @@ class LocalGeneric(CommutativeRing):
             O(5^8)
             sage: S = ZpLC(5, 15)
             doctest:...: FutureWarning: This class/method/function is marked as experimental. It, its functionality or its interface might change without a formal deprecation.
-            See http://trac.sagemath.org/23505 for details.
+            See https://github.com/sagemath/sage/issues/23505 for details.
             sage: S.is_lattice_prec()
             True
             sage: x = S(25, 8)
@@ -1459,7 +1459,7 @@ class LocalGeneric(CommutativeRing):
         tester.assertEqual(self.residue_field().characteristic(), self.residue_characteristic())
 
         from itertools import chain
-        from sage.all import MatrixSpace
+        from sage.matrix.matrix_space import MatrixSpace
         from .precision_error import PrecisionError
         matrices = chain(*[MatrixSpace(self, n, m).some_elements() for n in (1,3,7) for m in (1,4,7)])
         for M in tester.some_elements(matrices):

@@ -96,8 +96,8 @@ class PuzzlePiece():
 
             sage: from sage.combinat.knutson_tao_puzzles import DeltaPiece
             sage: delta = DeltaPiece('a','b','c')
-            sage: delta.border()
-            ('a', 'b', 'c')
+            sage: sorted(delta.border())
+            ['a', 'b', 'c']
         """
         return tuple(self.edge_label(edge) for edge in self.edges())
 
@@ -494,6 +494,7 @@ class RhombusPiece(PuzzlePiece):
         sage: RhombusPiece(delta,nabla)
         2/\3  6\/5
     """
+
     def __init__(self, north_piece, south_piece):
         r"""
         EXAMPLES::
@@ -650,6 +651,7 @@ class PuzzlePieces():
         [0/\0  0\/0, 0/\0  1\/10, 0/\10  10\/0, 0/\10  1\/1, 1/\0  0\/1,
         1/\1  10\/0, 1/\1  1\/1, 10/\1  0\/0, 10/\1  1\/10]
     """
+
     def __init__(self, forbidden_border_labels=None):
         r"""
         INPUT:
@@ -1070,6 +1072,7 @@ class PuzzleFilling():
     r"""
     Create partial puzzles and provides methods to build puzzles from them.
     """
+
     def __init__(self, north_west_labels, north_east_labels):
         r"""
         TESTS::
@@ -1925,6 +1928,7 @@ class KnutsonTaoPuzzleSolver(UniqueRepresentation):
           (4, 5): 1/\1  2\/2(1),
           (5, 5): 2(1)/1\2}]
     """
+
     def __init__(self, puzzle_pieces):
         r"""
         Knutson-Tao puzzle solver.
@@ -1986,7 +1990,7 @@ class KnutsonTaoPuzzleSolver(UniqueRepresentation):
                     puzzle_pieces = BK_pieces(max_letter)
                 else:
                     raise ValueError("max_letter needs to be specified")
-        return super(KnutsonTaoPuzzleSolver, cls).__classcall__(cls, puzzle_pieces)
+        return super().__classcall__(cls, puzzle_pieces)
 
     def __call__(self, lamda, mu, algorithm='strips'):
         r"""

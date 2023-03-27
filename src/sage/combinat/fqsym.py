@@ -41,6 +41,7 @@ class FQSymBasis_abstract(CombinatorialFreeModule, BindableClass):
     - ``_basis_name`` -- the name of the basis and must match one
       of the names that the basis can be constructed from FQSym
     """
+
     def __init__(self, alg):
         r"""
         Initialize ``self``.
@@ -160,7 +161,7 @@ class FQSymBasis_abstract(CombinatorialFreeModule, BindableClass):
             else:
                 return self.coerce_map_from(G) * phi
 
-        return super(FQSymBasis_abstract, self)._coerce_map_from_(R)
+        return super()._coerce_map_from_(R)
 
     @cached_method
     def an_element(self):
@@ -476,7 +477,7 @@ class FreeQuasisymmetricFunctions(UniqueRepresentation, Parent):
                 r = list(r)
             elif r == 1:
                 r = [1]
-            return super(FreeQuasisymmetricFunctions.F, self).__getitem__(r)
+            return super().__getitem__(r)
 
         def degree_on_basis(self, t):
             """
@@ -787,7 +788,7 @@ class FreeQuasisymmetricFunctions(UniqueRepresentation, Parent):
                 r = list(r)
             elif r == 1:
                 r = [1]
-            return super(FreeQuasisymmetricFunctions.G, self).__getitem__(r)
+            return super().__getitem__(r)
 
         def _G_to_F_on_basis(self, w):
             r"""
@@ -1005,7 +1006,7 @@ class FreeQuasisymmetricFunctions(UniqueRepresentation, Parent):
                 r = list(r)
             elif r == 1:
                 r = [1]
-            return super(FreeQuasisymmetricFunctions.M, self).__getitem__(r)
+            return super().__getitem__(r)
 
         def _F_to_M_on_basis(self, w):
             r"""
@@ -1232,6 +1233,7 @@ class FQSymBases(Category_realization_of_parent):
     r"""
     The category of graded bases of `FQSym` indexed by permutations.
     """
+
     def __init__(self, base):
         r"""
         Initialize the bases of an `FQSym`

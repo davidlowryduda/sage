@@ -43,13 +43,13 @@ from sage.rings.integer_ring import ZZ
 from sage.rings.fraction_field import FractionField
 from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 from sage.rings.fraction_field_element import FractionFieldElement
-from sage.sets.all import Set
+from sage.sets.set import Set
 from sage.graphs.digraph import DiGraph
 from sage.combinat.cluster_algebra_quiver.quiver_mutation_type import QuiverMutationType_Irreducible, QuiverMutationType_Reducible
 from sage.combinat.cluster_algebra_quiver.mutation_type import is_mutation_finite
 from random import randint
 from sage.misc.misc_c import prod
-from sage.matrix.all import identity_matrix
+from sage.matrix.special import identity_matrix
 from sage.matrix.constructor import matrix
 from sage.combinat.cluster_algebra_quiver.quiver import ClusterQuiver
 from sage.rings.integer import Integer
@@ -90,7 +90,7 @@ class ClusterSeed(SageObject):
         sage: T = ClusterSeed( S.quiver()._digraph ); T
         A seed for a cluster algebra of rank 7
 
-        sage: T = ClusterSeed( S.quiver()._digraph.edges() ); T
+        sage: T = ClusterSeed( S.quiver()._digraph.edges(sort=True) ); T
         A seed for a cluster algebra of rank 7
 
         sage: S = ClusterSeed(['B',2]); S
@@ -130,6 +130,7 @@ class ClusterSeed(SageObject):
         sage: S = ClusterSeed(['D', 4],user_labels = [-1, 0, 1, 2]);S
         A seed for a cluster algebra of rank 4 of type ['D', 4]
     """
+
     def __init__(self, data, frozen=None, is_principal=False, user_labels=None, user_labels_prefix='x'):
         r"""
 
@@ -1062,7 +1063,7 @@ class ClusterSeed(SageObject):
 
             sage: S = ClusterSeed(['A',4])
             sage: S.interact()
-            VBox(children=...
+            ...VBox(children=...
         """
         return cluster_interact(self, fig_size, circular, kind='seed')
 
@@ -2384,7 +2385,7 @@ class ClusterSeed(SageObject):
             sage: S.cluster()
             [(b + 1)/a, (a*c*d + b + 1)/(a*b), c, (a*c*d + b^2 + 2*b + 1)/(a*b*d)]
 
-            sage: S=ClusterSeed(DiGraph([[5, 'b']]))
+            sage: S = ClusterSeed(DiGraph([[5, 'b']]))
             sage: S.mutate(5)
             sage: S.cluster()
             [(b + 1)/x5, b]
@@ -2395,7 +2396,7 @@ class ClusterSeed(SageObject):
             sage: S.cluster()
             [(b + 1)/x5, b]
 
-            sage: S=ClusterSeed(DiGraph([[1, 2]]))
+            sage: S = ClusterSeed(DiGraph([[1, 2]]))
             sage: S.cluster()
             [x1, x2]
             sage: S.mutate(1)
@@ -2936,11 +2937,11 @@ class ClusterSeed(SageObject):
         EXAMPLES::
 
             sage: S = ClusterSeed(['A',4])
-            sage: T = ClusterSeed( S.quiver().digraph().edges(), frozen=[3] )
-            sage: T.quiver().digraph().edges()
+            sage: T = ClusterSeed( S.quiver().digraph().edges(sort=True), frozen=[3] )
+            sage: T.quiver().digraph().edges(sort=True)
             [(0, 1, (1, -1)), (2, 1, (1, -1)), (2, 3, (1, -1))]
 
-            sage: T.exchangeable_part().quiver().digraph().edges()
+            sage: T.exchangeable_part().quiver().digraph().edges(sort=True)
             [(0, 1, (1, -1)), (2, 1, (1, -1))]
 
         """
@@ -3110,7 +3111,7 @@ class ClusterSeed(SageObject):
             sage: T2 == T
             True
         """
-        from sage.matrix.all import identity_matrix
+        from sage.matrix.special import identity_matrix
         if self._m != 0:
             raise ValueError("the b-matrix is not square")
         M = self._M.stack(identity_matrix(self._n))
@@ -3442,7 +3443,6 @@ class ClusterSeed(SageObject):
             yield (self,[])
         else:
             yield self
-
 
         # instantiate the variables
         clusters = {}
@@ -4345,27 +4345,27 @@ class ClusterSeed(SageObject):
 
         EXAMPLES::
 
-            sage: B=matrix([[0,3,-3],[-3,0,3],[3,-3,0],[1,0,0],[0,1,0],[0,0,1]])
-            sage: C=ClusterSeed(B)
+            sage: B = matrix([[0,3,-3],[-3,0,3],[3,-3,0],[1,0,0],[0,1,0],[0,0,1]])
+            sage: C = ClusterSeed(B)
             sage: C.get_upper_cluster_algebra_element([1,1,0])
             (x0^3*x2^3*x3*x4 + x2^6*x3 + x1^3*x2^3)/(x0*x1)
             sage: C.get_upper_cluster_algebra_element([1,1,1])
             x0^2*x1^2*x2^2*x3*x4*x5 + x0^2*x1^2*x2^2
 
-            sage: B=matrix([[0,3,0],[-3,0,3],[0,-3,0]])
-            sage: C=ClusterSeed(B)
+            sage: B = matrix([[0,3,0],[-3,0,3],[0,-3,0]])
+            sage: C = ClusterSeed(B)
             sage: C.get_upper_cluster_algebra_element([1,1,0])
             (x1^3*x2^3 + x0^3 + x2^3)/(x0*x1)
             sage: C.get_upper_cluster_algebra_element([1,1,1])
             (x0^3*x1^3 + x1^3*x2^3 + x0^3 + x2^3)/(x0*x1*x2)
 
-            sage: B=matrix([[0,2],[-3,0],[4,-5]])
-            sage: C=ClusterSeed(B)
+            sage: B = matrix([[0,2],[-3,0],[4,-5]])
+            sage: C = ClusterSeed(B)
             sage: C.get_upper_cluster_algebra_element([1,1])
             (x2^9 + x1^3*x2^5 + x0^2*x2^4)/(x0*x1)
 
-            sage: B=matrix([[0,3,-5],[-3,0,4],[5,-4,0]])
-            sage: C=ClusterSeed(B)
+            sage: B = matrix([[0,3,-5],[-3,0,4],[5,-4,0]])
+            sage: C = ClusterSeed(B)
             sage: C.get_upper_cluster_algebra_element([1,1,1])
             x0^4*x1^2*x2^3 + x0^2*x1^3*x2^4
         """
@@ -4600,7 +4600,7 @@ def _bino(n, k):
         0
     """
     if n >= 0:
-        from sage.arith.all import binomial
+        from sage.arith.misc import binomial
         return binomial(n, k)
     else:
         return 0
@@ -4627,6 +4627,7 @@ def coeff_recurs(p, q, a1, a2, b, c):
         else:
             return sum((-1)**(k-1)*coeff_recurs(p, q-k, a1, a2, b, c)*_bino(a1-b*p+k-1, k)
                        for k in range(1, q+1))
+
 
 def PathSubset(n, m):
     r"""
@@ -4686,6 +4687,7 @@ def SetToPath(T):
     if 2*n-2 in T:
         ans.append(2*n-2)
     return ans
+
 
 def is_LeeLiZel_allowable(T,n,m,b,c):
     """

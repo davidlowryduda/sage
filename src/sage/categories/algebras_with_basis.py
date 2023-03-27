@@ -104,7 +104,7 @@ class AlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
         sage: TestSuite(AlgebrasWithBasis(QQ)).run()
     """
 
-    def example(self, alphabet = ('a','b','c')):
+    def example(self, alphabet=('a','b','c')):
         """
         Return an example of algebra with basis.
 
@@ -273,7 +273,6 @@ class AlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
             # would be easy to implement, but without a special
             # version of module morphism, this would not take
             # advantage of the block structure
-
 
     class TensorProducts(TensorProductsCategory):
         """

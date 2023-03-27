@@ -49,10 +49,10 @@ dnl Make sure the path to our own m4 macros is always properly set
 dnl and doesn't depend on how autoconf is called.
 AC_CONFIG_MACRO_DIR([m4])
 
-dnl The AC_LIB_RPATH macro comes from gettext, which is one of our bootstrap
-dnl packages. It defines, among other things, the $acl_shlibext variable that
+dnl The AC_LIB_RPATH macro comes from a Gnulib-provided file in m4/.
+dnl It defines, among other things, the $acl_shlibext variable that
 dnl contains the shared library extension for this system. We already use the
-dnl AM_ICONV macro from gettext (which ultimately calls AC_LIB_RPATH), and we
+dnl AM_ICONV macro from the same source (which ultimately calls AC_LIB_RPATH), and we
 dnl avoid involving libtool by using it to get the shared library extension.
 AC_LIB_RPATH
 AC_SUBST(SHLIBEXT, "${acl_shlibext}")
@@ -127,9 +127,16 @@ AC_ARG_ENABLE([debug],
 AC_ARG_VAR(SAGE_DEBUG, controls debugging support: "no" debugging; debugging "symbols" (default); build debug version ("yes"))
 
 AC_ARG_ENABLE([editable],
-              [AS_HELP_STRING([--enable-editable],
-                              [use an editable install of the Sage library])],
+              [AS_HELP_STRING([--disable-editable],
+                              [do not use an editable install of the Sage library: changes to Python files will require "sage -b" to rebuild the Sage library])],
+              [AC_SUBST([SAGE_EDITABLE], [$enableval])],
               [AC_SUBST([SAGE_EDITABLE], [yes])])
+
+AC_ARG_ENABLE([wheels],
+              [AS_HELP_STRING([--enable-wheels],
+                              [build wheels for the Sage library and update them on "sage -b"; if disabled, use "make wheels" to build wheels])],
+              [AC_SUBST([SAGE_WHEELS], [$enableval])],
+              [])
 
 # Check whether we are on a supported platform
 AC_CANONICAL_BUILD()
@@ -434,8 +441,9 @@ AC_ARG_ENABLE([experimental-packages],
   [AS_HELP_STRING([--enable-experimental-packages],
     [allow installing experimental packages (default: no = ask for user confirmation for each package)])])
 AC_ARG_ENABLE([download-from-upstream-url],
-  [AS_HELP_STRING([--enable-download-from-upstream-url],
-    [allow downloading packages from their upstream URL if they cannot be found on the Sage mirrors])])
+  [AS_HELP_STRING([--disable-download-from-upstream-url],
+    [disallow downloading packages from their upstream URL if they cannot be found on the Sage mirrors])], [],
+    [AS_VAR_SET([enable_download_from_upstream_url], [yes])])
 
 SAGE_SPKG_OPTIONS=""
 AS_IF([test "x$enable_experimental_packages" = "xyes"], [
@@ -479,7 +487,7 @@ AS_IF([test "$SAGE_ENABLE_notebook" = no -a "$SAGE_ENABLE_sagelib" = no], [
 AC_ARG_ENABLE([r],
   AS_HELP_STRING([--disable-r],
                  [disable build of the R package and related packages]), [
-    for pkg in r rpy2 r_jupyter pcre; do
+    for pkg in r rpy2 r_jupyter; do
       AS_VAR_SET([SAGE_ENABLE_$pkg], [$enableval])
     done
   ])
@@ -488,7 +496,7 @@ AC_ARG_ENABLE([doc],
   AS_HELP_STRING([--disable-doc],
                  [disable build of the Sage documentation and packages depending on it]), [
     dnl Disable packages needed for docbuilding
-    for pkg in sage_docbuild alabaster babel snowballstemmer imagesize sphinx sphinxcontrib_devhelp sphinxcontrib_jsmath sphinxcontrib_serializinghtml sphinxcontrib_applehelp sphinxcontrib_htmlhelp sphinxcontrib_qthelp sphinxcontrib_websupport jupyter_sphinx; do
+    for pkg in sage_docbuild alabaster babel snowballstemmer imagesize sphinx sphinxcontrib_devhelp sphinxcontrib_jsmath sphinxcontrib_serializinghtml sphinxcontrib_applehelp sphinxcontrib_htmlhelp sphinxcontrib_qthelp sphinxcontrib_websupport jupyter_sphinx furo; do
       AS_VAR_SET([SAGE_ENABLE_$pkg], [$enableval])
     done
     AS_VAR_IF([enableval], [no], [dnl Disable the docbuild by disabling the install tree for documentation

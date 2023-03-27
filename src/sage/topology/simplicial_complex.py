@@ -165,6 +165,7 @@ from sage.structure.sage_object import SageObject
 from sage.structure.parent import Parent
 from sage.rings.integer import Integer
 from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+from sage.rings.polynomial.polynomial_ring import polygens
 from sage.sets.set import Set
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
@@ -290,6 +291,7 @@ def lattice_paths(t1, t2, length=None):
                     [path + [(t1[-1], t2[-1])] for path
                      in lattice_paths(t1[:-1], t2[:-1], length=length-1)])
 
+
 def rename_vertex(n, keep, left=True):
     """
     Rename a vertex: the vertices from the list ``keep`` get
@@ -315,7 +317,7 @@ def rename_vertex(n, keep, left=True):
         sage: rename_vertex(3, [5, 6, 7], left=False)
         'R3'
     """
-    lookup = {i:v for v,i in enumerate(keep)}
+    lookup = {i: v for v, i in enumerate(keep)}
     try:
         return lookup[n]
     except KeyError:
@@ -323,6 +325,7 @@ def rename_vertex(n, keep, left=True):
             return "L" + str(n)
         else:
             return "R" + str(n)
+
 
 @total_ordering
 class Simplex(SageObject):
@@ -814,6 +817,7 @@ class Simplex(SageObject):
         """
         return latex(self.__tuple)
 
+
 class SimplicialComplex(Parent, GenericCellComplex):
     r"""
     Define a simplicial complex.
@@ -1052,7 +1056,7 @@ class SimplicialComplex(Parent, GenericCellComplex):
                     try:
                         normalize_names(1, v)
                     except ValueError:
-                        raise ValueError("the vertex %s does not have an appropriate name"%v)
+                        raise ValueError("the vertex %s does not have an appropriate name" % v)
             # build dictionary of generator names
             try:
                 gen_dict[v] = 'x%s' % int(v)
@@ -1448,7 +1452,7 @@ class SimplicialComplex(Parent, GenericCellComplex):
             sage: octa.h_vector()
             [1, 3, 3, 1]
         """
-        from sage.arith.all import binomial
+        from sage.arith.misc import binomial
         d = self.dimension()
         f = self.f_vector()  # indexed starting at 0, since it's a Python list
         h = []
@@ -1518,10 +1522,14 @@ class SimplicialComplex(Parent, GenericCellComplex):
         The `f`-triangle is given by `f_{i,j}` being the number of
         faces `F` of size `j` such that `i = \max_{G \subseteq F} |G|`.
 
+        .. SEEALSO::
+
+            Not to be confused with :meth:`F_triangle` .
+
         EXAMPLES::
 
             sage: X = SimplicialComplex([[1,2,3], [3,4,5], [1,4], [1,5], [2,4], [2,5]])
-            sage: X.f_triangle()  ## this complex is not pure
+            sage: X.f_triangle()   # this complex is not pure
             [[0],
              [0, 0],
              [0, 0, 4],
@@ -1565,7 +1573,7 @@ class SimplicialComplex(Parent, GenericCellComplex):
              [0, 0, 4],
              [1, 2, -1, 0]]
         """
-        from sage.arith.all import binomial
+        from sage.arith.misc import binomial
         ret = [[0]*(i+1) for i in range(self.dimension() + 2)]
         f = self.f_triangle()
         for i, row in enumerate(ret):
@@ -1573,6 +1581,48 @@ class SimplicialComplex(Parent, GenericCellComplex):
                 row[j] = sum((-1)**(j-k) * binomial(i-k, j-k) * f[i][k]
                              for k in range(j+1))
         return ret
+
+    def F_triangle(self, S):
+        """
+        Return the F-triangle of ``self`` with respect
+        to one maximal simplex ``S``.
+
+        This is the bivariate generating polynomial of all faces,
+        according to the number of elements in ``S`` and outside ``S``.
+
+        OUTPUT:
+
+        an :class:`~sage.combinat.triangles_FHM.F_triangle`
+
+        .. SEEALSO::
+
+            Not to be confused with :meth:`f_triangle` .
+
+        EXAMPLES::
+
+            sage: cs = simplicial_complexes.Torus()
+            sage: cs.F_triangle(cs.facets()[0])
+            F: x^3 + 9*x^2*y + 3*x*y^2 + y^3 + 6*x^2 + 12*x*y
+            + 3*y^2 + 4*x + 3*y + 1
+
+        TESTS::
+
+            sage: S = SimplicialComplex([])
+            sage: S.F_triangle(S.facets()[0])
+            F: 1
+        """
+        x, y = polygens(ZZ, 'x, y')
+        from sage.combinat.triangles_FHM import F_triangle
+
+        def nega(f):
+            return sum(1 for v in f if v in S)
+
+        def posi(f):
+            return f.dimension() + 1 - nega(f)
+
+        poly = sum(x**posi(fa) * y**nega(fa)
+                   for fa in self.face_iterator())
+        return F_triangle(poly)
 
     def flip_graph(self):
         """
@@ -1589,28 +1639,28 @@ class SimplicialComplex(Parent, GenericCellComplex):
 
             sage: S0 = simplicial_complexes.Sphere(0)
             sage: G = S0.flip_graph()
-            sage: G.vertices(); G.edges(labels=False)
+            sage: G.vertices(sort=True); G.edges(sort=True, labels=False)
             [(0,), (1,)]
             [((0,), (1,))]
 
             sage: G = (S0.wedge(S0)).flip_graph()
-            sage: G.vertices(); G.edges(labels=False)
+            sage: G.vertices(sort=True); G.edges(sort=True, labels=False)
             [(0,), ('L1',), ('R1',)]
             [((0,), ('L1',)), ((0,), ('R1',)), (('L1',), ('R1',))]
 
             sage: S1 = simplicial_complexes.Sphere(1)
             sage: S2 = simplicial_complexes.Sphere(2)
             sage: G = (S1.wedge(S1)).flip_graph()
-            sage: len(G.vertices())
+            sage: len(G.vertices(sort=False))
             6
-            sage: len(G.edges())
+            sage: len(G.edges(sort=False))
             10
 
             sage: (S1.wedge(S2)).flip_graph() is None
             True
 
             sage: G = S2.flip_graph()
-            sage: G.vertices(); G.edges(labels=False)
+            sage: G.vertices(sort=True); G.edges(sort=True, labels=False)
             [(0, 1, 2), (0, 1, 3), (0, 2, 3), (1, 2, 3)]
             [((0, 1, 2), (0, 1, 3)),
              ((0, 1, 2), (0, 2, 3)),
@@ -1621,7 +1671,7 @@ class SimplicialComplex(Parent, GenericCellComplex):
 
             sage: T = simplicial_complexes.Torus()
             sage: G = T.suspension(4).flip_graph()
-            sage: len(G.vertices()); len(G.edges(labels=False))
+            sage: len(G.vertices(sort=False)); len(G.edges(sort=False, labels=False))
             46
             161
         """
@@ -1851,7 +1901,7 @@ class SimplicialComplex(Parent, GenericCellComplex):
             True
         """
         return self.join(SimplicialComplex([["0"]], is_mutable=is_mutable),
-                         rename_vertices = True)
+                         rename_vertices=True)
 
     def suspension(self, n=1, is_mutable=True):
         r"""
@@ -1926,7 +1976,7 @@ class SimplicialComplex(Parent, GenericCellComplex):
                 return SimplicialComplex(new_facets)
             else:
                 return self.join(SimplicialComplex([["0"], ["1"]], is_mutable=is_mutable),
-                                 rename_vertices = True)
+                                 rename_vertices=True)
         return self.suspension(1, is_mutable).suspension(int(n-1), is_mutable)
 
     def disjoint_union(self, right, rename_vertices=True, is_mutable=True):
@@ -2230,7 +2280,7 @@ class SimplicialComplex(Parent, GenericCellComplex):
         :type reduced: boolean; optional, default ``True``
 
         :param generators: If ``True``, return the homology groups and
-        also generators for them.
+           also generators for them.
 
         :type reduced: boolean; optional, default ``False``
 
@@ -2364,8 +2414,8 @@ class SimplicialComplex(Parent, GenericCellComplex):
                     for (H, gen) in H_with_gens:
                         v = gen.vector(i)
                         new_gen = chains.zero()
-                        for (coeff, chain) in zip(v, chains.gens()):
-                            new_gen += coeff * chain
+                        for (coeff, chaine) in zip(v, chains.gens()):
+                            new_gen += coeff * chaine
                         new_H.append((H, new_gen))
                     answer[i] = new_H
 
@@ -2781,6 +2831,35 @@ class SimplicialComplex(Parent, GenericCellComplex):
         """
         for f in faces:
             self.remove_face(f, check=check)
+
+    def is_subcomplex(self, other):
+        """
+        Return ``True`` if this is a subcomplex of ``other``.
+
+        :param other: another simplicial complex
+
+        EXAMPLES::
+
+            sage: S1 = simplicial_complexes.Sphere(1)
+            sage: S1.is_subcomplex(S1)
+            True
+            sage: Empty = SimplicialComplex()
+            sage: Empty.is_subcomplex(S1)
+            True
+            sage: S1.is_subcomplex(Empty)
+            False
+
+            sage: sorted(S1.facets())
+            [(0, 1), (0, 2), (1, 2)]
+            sage: T = S1.product(S1)
+            sage: sorted(T.facets())[0] # typical facet in T
+            ('L0R0', 'L0R1', 'L1R1')
+            sage: S1.is_subcomplex(T)
+            False
+            sage: T._contractible_subcomplex().is_subcomplex(T)
+            True
+        """
+        return all(f in other for f in self.facets())
 
     def connected_sum(self, other, is_mutable=True):
         """
@@ -3622,7 +3701,7 @@ class SimplicialComplex(Parent, GenericCellComplex):
             sage: S = SimplicialComplex([[0,1,2,3]])
             sage: G = S.graph(); G
             Graph on 4 vertices
-            sage: G.edges()
+            sage: G.edges(sort=True)
             [(0, 1, None), (0, 2, None), (0, 3, None), (1, 2, None), (1, 3, None), (2, 3, None)]
         """
         if self._graph is None:
@@ -4049,7 +4128,7 @@ class SimplicialComplex(Parent, GenericCellComplex):
             return self.connected_component(Simplex([base_point])).fundamental_group(simplify=simplify)
 
         from sage.groups.free_group import FreeGroup
-        from sage.interfaces.gap import gap
+        from sage.libs.gap.libgap import libgap as gap
         G = self.graph()
         # If the vertices and edges of G are not sortable, e.g., a mix
         # of str and int, Sage+Python 3 may raise a TypeError when
@@ -4062,7 +4141,8 @@ class SimplicialComplex(Parent, GenericCellComplex):
         G2 = G.copy(immutable=False)
         G2.relabel(v_to_int)
         spanning_tree = G2.min_spanning_tree()
-        gens = [(int_to_v[e[0]], int_to_v[e[1]]) for e in G2.edges()
+        gens = [(int_to_v[e[0]], int_to_v[e[1]])
+                for e in G2.edges(sort=True)
                 if e not in spanning_tree]
         if len(gens) == 0:
             return gap.TrivialGroup()
@@ -4072,7 +4152,7 @@ class SimplicialComplex(Parent, GenericCellComplex):
         # don't have to worry about it. Convert spanning_tree to a set
         # to make lookup faster.
         spanning_tree = set(frozenset((int_to_v[e[0]], int_to_v[e[1]]))
-                             for e in spanning_tree)
+                            for e in spanning_tree)
         gens_dict = {frozenset(g): i for i, g in enumerate(gens)}
         FG = FreeGroup(len(gens), 'e')
         rels = []
@@ -4393,7 +4473,7 @@ class SimplicialComplex(Parent, GenericCellComplex):
             sage: S = SimplicialComplex([(0,1,2), (2,3,5)])
             sage: print(S._chomp_repr_())
             doctest:...: DeprecationWarning: the CHomP interface is deprecated; hence so is this function
-            See https://trac.sagemath.org/33777 for details.
+            See https://github.com/sagemath/sage/issues/33777 for details.
             (2, 3, 5)
             (0, 1, 2)
 
@@ -4722,6 +4802,7 @@ class SimplicialComplex(Parent, GenericCellComplex):
             F = F + [s for s in self.faces()[k] if s in other.faces()[k]]
         return SimplicialComplex(F)
 
+
 # Miscellaneous utility functions.
 
 # The following two functions can be used to generate the facets for
@@ -4790,4 +4871,4 @@ def facets_for_K3():
     G = PermutationGroup([[(1,3,8,4,9,16,15,2,14,12,6,7,13,5,10)],
                          [(1,11,16),(2,10,14),(3,12,13),(4,9,15),(5,7,8)]])
     return ([tuple([g(i) for i in (1,2,3,8,12)]) for g in G]
-            +[tuple([g(i) for i in (1,2,5,8,14)]) for g in G])
+            + [tuple([g(i) for i in (1,2,5,8,14)]) for g in G])
